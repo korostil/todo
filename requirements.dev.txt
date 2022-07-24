@@ -1,0 +1,14 @@
+-r requirements.txt
+isort
+pytest
+pytest-freezegun
+pre-commit
+mypy
+flake8
+allure-pytest
+pytest-asyncio
+httpx
+factory-boy
+pytest-mock
+pytest-env
+types-ujson

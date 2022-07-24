@@ -1,0 +1,7 @@
+pydantic
+fastapi
+uvicorn
+funcy
+ujson
+click
+uvloop

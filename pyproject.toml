@@ -1,0 +1,50 @@
+[tool.pytest.ini_options]
+norecursedirs = ".mypy_cache .pytest_cache"
+python_files = "test_*.py"
+python_classes = "*Test*"
+
+[tool.black]
+target-version = ['py310']
+skip-string-normalization = true
+skip-magic-trailing-comma = true
+exclude = '''
+(
+  /(
+      \.git
+    | \.mypy_cache
+    | \.ipython
+    | \.venv
+    | venv
+    | \.pytest_cache
+    | allure-results
+  )/
+)
+'''
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+use_parentheses = true
+line_length = 88
+combine_as_imports = true
+combine_star = true
+known_third_party = ['pydantic', 'freezegun']
+skip = [
+    '.git',
+    '.mypy_cache',
+    '.ipython',
+    'venv'
+]
+
+[tool.mypy]
+follow_imports = "silent"
+ignore_missing_imports = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_no_return = false
+warn_unreachable = true
+strict_equality = true
+warn_redundant_casts = true
+exclude = ["venv", "tests"]
