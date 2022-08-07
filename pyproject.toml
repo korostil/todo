@@ -1,7 +1,11 @@
 [tool.pytest.ini_options]
 norecursedirs = ".mypy_cache .pytest_cache"
 python_files = "test_*.py"
-python_classes = "*Test*"
+python_classes = "Test*"
+asyncio_mode = "auto"
+env = [
+    "ENVIRONMENT = test"
+]
 
 [tool.black]
 target-version = ['py310']
@@ -16,7 +20,6 @@ exclude = '''
     | \.venv
     | venv
     | \.pytest_cache
-    | allure-results
   )/
 )
 '''

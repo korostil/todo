@@ -1,7 +1,11 @@
-pydantic
-fastapi
-uvicorn
-funcy
-ujson
+alembic
+asyncpg
 click
+databases
+fastapi
+funcy
+pydantic
+sqlalchemy[asyncio]
+ujson
+uvicorn
 uvloop

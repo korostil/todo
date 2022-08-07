@@ -1,0 +1,25 @@
+[flake8]
+exclude =
+    .git,
+    venv,
+    .venv,
+    .mypy_cache,
+    .pytest_cache,
+    data,
+    .ipython,
+    migrations
+
+max-line-length = 88
+ignore =
+	# do not assign a lambda expression, use a def
+	E731,
+	# line break before binary operator
+	W503,
+	# whitespace before ':' (compatibility with black)
+	E203
+per-file-ignores =
+    # 'module' imported but unused
+    **/__init__.py: F401, F403
+    # W291 - trailing whitespace
+    ./alembic/env.py: F401, F403, W291
+    .ipython.py: F401, F403

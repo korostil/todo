@@ -1,12 +1,29 @@
 import click
 import uvicorn
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException, RequestValidationError
 
 from api import router
+from app.database import database
+from app.error_handlers import exceptions_handler, validations_handler
 from app.settings import settings
 
 app = FastAPI(title=settings.app_name, debug=settings.debug)
+app.settings = settings  # type: ignore
 app.include_router(router, prefix='/api')
+
+app.add_exception_handler(RequestValidationError, validations_handler)
+app.add_exception_handler(HTTPException, exceptions_handler)
+
+
+@app.on_event('startup')
+async def startup() -> None:
+    await database.connect()
+
+
+@app.on_event('shutdown')
+async def shutdown() -> None:
+    await database.disconnect()
 
 
 @click.group()

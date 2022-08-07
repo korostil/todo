@@ -1,14 +1,15 @@
 -r requirements.txt
-isort
-pytest
-pytest-freezegun
-pre-commit
-mypy
-flake8
-allure-pytest
-pytest-asyncio
-httpx
+black
 factory-boy
-pytest-mock
+flake8
+httpx
+isort
+mypy
+pre-commit
+pytest
+pytest-asyncio
 pytest-env
+pytest-freezegun
+pytest-mock
+pyupgrade
 types-ujson

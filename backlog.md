@@ -1,0 +1,28 @@
+# backlog
+- [ ] Project description
+- [ ] Speed up tests
+- [ ] Extend task model
+      - [ ] priority
+      - [ ] labels
+- [ ] Extend project model
+- [ ] Label model
+      - [ ] CRUD
+- [ ] Move to poetry
+- [ ] Yandex.Cloud
+- [ ] Tasks archive
+  - [ ] search
+  - [ ] filter by date
+  - [ ] filter by label
+- [ ] Recurrent task
+- [ ] Subtasks
+- [ ] Comments
+  - [ ] Simple text
+  - [ ] File upload to storage
+  - [ ] Link
+- [ ] Goal model
+  - [ ] daily/weekly/monthly/yearly
+- [ ] daily/weekly/monthly/yearly review
+- [ ] logger?
+- [ ] monitor?
+- [ ] pomodoro
+- [ ]
