@@ -2,9 +2,12 @@
 - [ ] Project description
 - [ ] Speed up tests
 - [ ] Extend task model
-      - [ ] priority
-      - [ ] labels
+  - [ ] space
+  - [ ] priority
+  - [ ] labels
+  - [ ] completed_at
 - [ ] Extend project model
+  - [ ] space
 - [ ] Label model
       - [ ] CRUD
 - [ ] Move to poetry
