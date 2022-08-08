@@ -11,6 +11,7 @@ class Project(BaseDBModel):
     archived = Column(Boolean(), default=False, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     description = Column(String(256), nullable=False)
+    space = Column(Integer, nullable=False)
     title = Column(String(256), nullable=False)
 
     def __repr__(self) -> str:

@@ -157,3 +157,51 @@ class TestCreateTask:
         assert response.json() == serialize_error_response(
             'bad_request', 'description str type expected'
         )
+
+    async def test_invalid_space(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        task_data['space'] = 'invalid'
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'space value is not a valid integer'
+        )
+
+    async def test_null_space(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        task_data['space'] = None
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'space none is not an allowed value'
+        )
+
+    async def test_space_required(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        del task_data['space']
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'space field required'
+        )
+
+    async def test_unavailable_space(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        task_data['space'] = 1000
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'space 1000 is not a valid Space'
+        )

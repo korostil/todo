@@ -11,6 +11,7 @@ def serialize_task(task: Task) -> dict:
         'due': task.due.isoformat(),
         'id': task.id,
         'title': task.title,
+        'space': task.space,
     }
 
 
