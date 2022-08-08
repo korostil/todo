@@ -7,7 +7,7 @@ exclude =
     .pytest_cache,
     data,
     .ipython,
-    migrations
+    alembic
 
 max-line-length = 88
 ignore =

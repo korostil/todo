@@ -4,7 +4,7 @@ from app.database import BaseDBModel
 
 
 class Project(BaseDBModel):
-    __tablename__ = 'projects'
+    __tablename__ = 'project'
 
     id = Column(Integer, primary_key=True)
 

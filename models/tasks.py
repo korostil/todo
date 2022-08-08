@@ -4,7 +4,7 @@ from app.database import BaseDBModel
 
 
 class Task(BaseDBModel):
-    __tablename__ = 'tasks'
+    __tablename__ = 'task'
 
     id = Column(Integer, primary_key=True)
 

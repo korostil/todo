@@ -20,6 +20,7 @@ exclude = '''
     | \.venv
     | venv
     | \.pytest_cache
+    | alembic
   )/
 )
 '''
@@ -36,7 +37,8 @@ skip = [
     '.git',
     '.mypy_cache',
     '.ipython',
-    'venv'
+    'venv',
+    'alembic'
 ]
 
 [tool.mypy]
