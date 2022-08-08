@@ -64,6 +64,18 @@ class TestCreateProject:
             'bad_request', 'title none is not an allowed value'
         )
 
+    async def test_title_required(self, client):
+        await self._setup()
+        project_data = ProjectDataFactory.create()
+        del project_data['title']
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title field required'
+        )
+
     async def test_empty_title(self, client):
         await self._setup()
         project_data = ProjectDataFactory.create()
@@ -110,6 +122,18 @@ class TestCreateProject:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'description none is not an allowed value'
+        )
+
+    async def test_description_required(self, client):
+        await self._setup()
+        project_data = ProjectDataFactory.create()
+        del project_data['description']
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'description field required'
         )
 
     async def test_empty_description(self, client):

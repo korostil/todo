@@ -44,15 +44,22 @@ async def create_project(request: CreateProjectRequest) -> Record:
 
 @router.put('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
 async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
-    query = (
-        update(Project)
-        .where(Project.id == pk)
-        .values(**request.dict())
-        .returning(Project)
-    )
+    update_data = request.dict(exclude_none=True)
+
+    if update_data:
+        query = (
+            update(Project)
+            .where(Project.id == pk)
+            .values(**update_data)
+            .returning(Project)
+        )
+    else:
+        query = select(Project).where(Project.id == pk)
+
     project = await database.fetch_one(query)
     if project is None:
         raise NotFound(f'project with pk={pk} not found')
+
     return project
 
 

@@ -1,4 +1,5 @@
 # backlog
+- [ ] separate task date and time
 - [ ] Project description
 - [ ] Speed up tests
 - [ ] Extend task model

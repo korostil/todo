@@ -10,6 +10,7 @@ from tests.factories import TaskFactory
 
 pytestmark = [pytest.mark.asyncio]
 
+
 class TestDeleteTask:
     async def _setup(self):
         self.task = await TaskFactory.create()

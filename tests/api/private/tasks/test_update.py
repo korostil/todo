@@ -26,6 +26,16 @@ class TestUpdateTask:
         assert task is not None
         assert response.json() == serialize_task_response(task)
 
+    async def test_partially_updated(self, client):
+        await self._setup()
+        expected_title = 'updated-title'
+        task_data = {'title': expected_title}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['title'] == expected_title
+
     async def test_not_found(self, client):
         await self._setup()
         pk = 100500

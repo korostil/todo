@@ -6,21 +6,21 @@ __all__ = ('TaskResponse', 'CreateTaskRequest', 'UpdateTaskRequest')
 
 
 class TaskBase(BaseModel):
-    description: str = Field(min_length=1, max_length=255)
+    description: str | None
     due: datetime | None
-    title: str = Field(min_length=1, max_length=255)
+    title: str | None
 
 
 class TaskResponse(TaskBase):
     created_at: datetime
     id: int
 
-    class Config:
-        orm_mode = True
-
 
 class CreateTaskRequest(TaskBase):
-    ...
+    description: str = Field(min_length=1, max_length=255)
+    title: str = Field(min_length=1, max_length=255)
 
 
-UpdateTaskRequest = CreateTaskRequest
+class UpdateTaskRequest(TaskBase):
+    description: str | None = Field(None, min_length=1, max_length=255)
+    title: str | None = Field(None, min_length=1, max_length=255)

@@ -29,6 +29,16 @@ class TestUpdateProject:
         assert project is not None
         assert response.json() == serialize_project_response(project)
 
+    async def test_partially_updated(self, client):
+        await self._setup()
+        expected_title = 'updated-title'
+        project_data = {'title': expected_title}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['title'] == expected_title
+
     async def test_not_found(self, client):
         await self._setup()
         pk = 100500
@@ -55,8 +65,7 @@ class TestUpdateProject:
 
     async def test_too_long_title(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['title'] = '*' * 256
+        project_data = {'title': '*' * 256}
 
         response = await client.put(self.url, json=project_data)
 
@@ -67,8 +76,7 @@ class TestUpdateProject:
 
     async def test_too_long_description(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['description'] = '*' * 256
+        project_data = {'description': '*' * 256}
 
         response = await client.put(self.url, json=project_data)
 

@@ -40,10 +40,17 @@ async def create_task(request: CreateTaskRequest) -> Record:
 
 @router.put('/tasks/{pk}/', tags=['tasks'], response_model=TaskResponse)
 async def update_task(pk: int, request: UpdateTaskRequest) -> Record:
-    query = update(Task).where(Task.id == pk).values(**request.dict()).returning(Task)
+    update_data = request.dict(exclude_none=True)
+
+    if update_data:
+        query = update(Task).where(Task.id == pk).values(**update_data).returning(Task)
+    else:
+        query = select(Task).where(Task.id == pk)
+
     task = await database.fetch_one(query)
     if task is None:
         raise NotFound(f'task with pk={pk} not found')
+
     return task
 
 

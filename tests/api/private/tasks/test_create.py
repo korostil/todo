@@ -124,6 +124,28 @@ class TestCreateTask:
             'bad_request', 'description ensure this value has at least 1 characters'
         )
 
+    async def test_empty_due(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        task_data['due'] = ''
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'due invalid datetime format'
+        )
+
+    @pytest.mark.xfail
+    async def test_due_date(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create(due='2020-01-01')
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['due'] == '2020-01-01 00:00:00'
+
     async def test_invalid_description(self, client):
         await self._setup()
         task_data = TaskDataFactory.create()
@@ -135,5 +157,3 @@ class TestCreateTask:
         assert response.json() == serialize_error_response(
             'bad_request', 'description str type expected'
         )
-
-    # TODO invalid due
