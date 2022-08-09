@@ -27,7 +27,6 @@ class TestDeleteTask:
         assert await database.fetch_one(query) is None
 
     async def test_not_found(self, client):
-        await self._setup()
         pk = 100500
         url = app.url_path_for('delete_task', pk=pk)
 

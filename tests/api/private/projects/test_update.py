@@ -40,7 +40,6 @@ class TestUpdateProject:
         assert response.json()['data']['title'] == expected_title
 
     async def test_not_found(self, client):
-        await self._setup()
         pk = 100500
         url = app.url_path_for('update_project', pk=pk)
 

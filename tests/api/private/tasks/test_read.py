@@ -20,7 +20,6 @@ class TestReadTask:
         assert response.json() == serialize_task_response(self.task)
 
     async def test_not_found(self, client):
-        await self._setup()
         pk = 100500
         url = app.url_path_for('read_task', pk=pk)
 

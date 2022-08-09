@@ -23,7 +23,6 @@ class TestReadProject:
         assert response.json() == serialize_project_response(self.project)
 
     async def test_not_found(self, client):
-        await self._setup()
         pk = 100500
         url = app.url_path_for('read_project', pk=pk)
 
