@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import factory
 import funcy
 
@@ -9,7 +11,6 @@ __all__ = ('ProjectFactory', 'ProjectDataFactory')
 
 
 class ProjectDataFactory(factory.DictFactory):
-    archived = False
     description = factory.Faker('sentence')
     title = factory.Faker('slug')
     space = Space.WORK.value
@@ -17,6 +18,10 @@ class ProjectDataFactory(factory.DictFactory):
 
 class ProjectFactory(AsyncFactory, ProjectDataFactory):
     id = factory.Sequence(funcy.identity)
+    archived_at = None
 
     class Meta:
         model = Project
+
+    class Params:
+        archived = factory.Trait(archived_at=datetime.now() - timedelta(minutes=1))

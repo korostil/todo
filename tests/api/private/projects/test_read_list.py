@@ -22,15 +22,25 @@ class TestReadProjectList:
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_project_response(projects)
 
-    @pytest.mark.parametrize('archived', [False, True])
-    async def test_filter_by_archived(self, client, archived):
+    async def test_filter_archived(self, client):
         await self._setup()
-        projects = await ProjectFactory.create_batch(size=2, archived=archived)
+        archived_project = await ProjectFactory.create(archived=True)
+        await ProjectFactory.create()
 
-        response = await client.get(self.url)
+        response = await client.get(self.url, params={'archived': True})
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == serialize_project_response(projects)
+        assert response.json() == serialize_project_response([archived_project])
+
+    async def test_filter_active(self, client):
+        await self._setup()
+        await ProjectFactory.create(archived=True)
+        active_project = await ProjectFactory.create()
+
+        response = await client.get(self.url, params={'archived': False})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_project_response([active_project])
 
     async def test_empty_list(self, client):
         await self._setup()

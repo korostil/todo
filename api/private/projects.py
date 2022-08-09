@@ -1,6 +1,6 @@
 from databases.interfaces import Record
 from fastapi import APIRouter, Query, status
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, func, insert, select, update
 
 from api.exceptions import NotFound
 from app.database import database
@@ -15,7 +15,11 @@ async def read_projects_list(archived: bool | None = Query(None)) -> list[Record
     query = select(Project)
 
     if archived is not None:
-        query.filter(Project.archived == archived)
+        query = query.filter(
+            Project.archived_at.isnot(None)
+            if archived
+            else Project.archived_at.is_(None)
+        )
 
     projects = await database.fetch_all(query)
     return projects
@@ -71,3 +75,45 @@ async def delete_project(pk: int) -> None:
     project = await database.fetch_val(query)
     if project is None:
         raise NotFound(f'project with pk={pk} not found')
+
+
+@router.post(
+    '/projects/{pk}/archive/',
+    tags=['projects'],
+    response_model=ProjectResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def archive_project(pk: int) -> Record:
+    query = (
+        update(Project)
+        .where(Project.id == pk)
+        .values(archived_at=func.now())
+        .returning(Project)
+    )
+
+    project = await database.fetch_one(query)
+    if project is None:
+        raise NotFound(f'project with pk={pk} not found')
+
+    return project
+
+
+@router.post(
+    '/projects/{pk}/restore/',
+    tags=['projects'],
+    response_model=ProjectResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def restore_project(pk: int) -> Record:
+    query = (
+        update(Project)
+        .where(Project.id == pk)
+        .values(archived_at=None)
+        .returning(Project)
+    )
+
+    project = await database.fetch_one(query)
+    if project is None:
+        raise NotFound(f'project with pk={pk} not found')
+
+    return project

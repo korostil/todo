@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, root_validator, validator
 
 from schemas.validators import validate_space
 
@@ -8,19 +8,23 @@ __all__ = ('ProjectResponse', 'CreateProjectRequest', 'UpdateProjectRequest')
 
 
 class ProjectBase(BaseModel):
-    archived: bool | None
     description: str | None
     title: str | None
     space: int | None
 
 
 class ProjectResponse(ProjectBase):
+    archived_at: datetime | None
     created_at: datetime
     id: int
 
+    @root_validator
+    def validate_project(cls, values: dict) -> dict:
+        values['is_archived'] = values.get('archived_at') is not None
+        return values
+
 
 class CreateProjectRequest(ProjectBase):
-    archived: bool = False
     description: str = Field(min_length=1, max_length=255)
     title: str = Field(min_length=1, max_length=255)
     space: int
