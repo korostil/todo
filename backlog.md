@@ -3,18 +3,16 @@
 - [ ] Project description
 - [ ] Speed up tests
 - [ ] Extend task model
-  - [ ] space
   - [ ] priority
   - [ ] labels
-  - [ ] completed_at
 - [ ] Extend project model
-  - [ ] space
 - [ ] Label model
       - [ ] CRUD
 - [ ] Move to poetry
 - [ ] Yandex.Cloud
 - [ ] Tasks archive
   - [ ] search
+  - [ ] reopen task
   - [ ] filter by date
   - [ ] filter by label
 - [ ] Recurrent task

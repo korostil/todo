@@ -25,8 +25,12 @@ class TaskDataFactory(factory.DictFactory):
 
 class TaskFactory(AsyncFactory, TaskDataFactory):
     created_at = factory.Faker('date_time')
+    completed_at = None
     due = factory.Faker('date_time')
     id = factory.Sequence(funcy.identity)
 
     class Meta:
         model = Task
+
+    class Params:
+        completed = factory.Trait(completed_at=datetime.now() - timedelta(minutes=1))

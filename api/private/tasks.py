@@ -1,6 +1,6 @@
 from databases.interfaces import Record
 from fastapi import APIRouter, status
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, func, insert, select, update
 
 from api.exceptions import NotFound
 from app.database import database
@@ -60,3 +60,40 @@ async def delete_task(pk: int) -> None:
     task = await database.fetch_val(query)
     if task is None:
         raise NotFound(f'task with pk={pk} not found')
+
+
+@router.post(
+    '/tasks/{pk}/complete/',
+    tags=['tasks'],
+    response_model=TaskResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def complete_task(pk: int) -> Record:
+    query = (
+        update(Task)
+        .where(Task.id == pk)
+        .values(completed_at=func.now())
+        .returning(Task)
+    )
+
+    task = await database.fetch_one(query)
+    if task is None:
+        raise NotFound(f'task with pk={pk} not found')
+
+    return task
+
+
+@router.post(
+    '/tasks/{pk}/reopen/',
+    tags=['tasks'],
+    response_model=TaskResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def reopen_task(pk: int) -> Record:
+    query = update(Task).where(Task.id == pk).values(completed_at=None).returning(Task)
+
+    task = await database.fetch_one(query)
+    if task is None:
+        raise NotFound(f'task with pk={pk} not found')
+
+    return task

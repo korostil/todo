@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, root_validator, validator
 
 from schemas.validators import validate_datetime, validate_space
 
@@ -16,7 +16,13 @@ class TaskBase(BaseModel):
 
 class TaskResponse(TaskBase):
     created_at: datetime
+    completed_at: datetime | None
     id: int
+
+    @root_validator
+    def validate_task(cls, values: dict) -> dict:
+        values['is_completed'] = values.get('completed_at') is not None
+        return values
 
 
 class CreateTaskRequest(TaskBase):

@@ -9,6 +9,7 @@ class Task(BaseDBModel):
     id = Column(Integer, primary_key=True)
 
     created_at = Column(DateTime, nullable=False, server_default=func.now())
+    completed_at = Column(DateTime)
     description = Column(String(256), nullable=False)
     due = Column(DateTime)
     space = Column(Integer, nullable=False)

@@ -159,7 +159,7 @@ class TestCreateTask:
 
     async def test_invalid_description(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create(description= [1, 2, 3])
+        task_data = TaskDataFactory.create(description=[1, 2, 3])
 
         response = await client.post(self.url, json=task_data)
 
