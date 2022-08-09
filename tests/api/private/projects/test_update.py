@@ -42,10 +42,9 @@ class TestUpdateProject:
     async def test_not_found(self, client):
         await self._setup()
         pk = 100500
-        project_data = ProjectDataFactory.create()
         url = app.url_path_for('update_project', pk=pk)
 
-        response = await client.put(url, json=project_data)
+        response = await client.put(url, json={})
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == serialize_error_response(

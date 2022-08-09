@@ -44,7 +44,7 @@ async def create_project(request: CreateProjectRequest) -> Record:
 
 @router.put('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
 async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
-    update_data = request.dict(exclude_none=True)
+    update_data = request.dict(exclude_unset=True)
 
     if update_data:
         query = (

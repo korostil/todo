@@ -42,8 +42,7 @@ class TestCreateTask:
 
     async def test_too_long_title(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['title'] = '*' * 256
+        task_data = TaskDataFactory.create(title='*' * 256)
 
         response = await client.post(self.url, json=task_data)
 
@@ -54,8 +53,7 @@ class TestCreateTask:
 
     async def test_null_title(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['title'] = None
+        task_data = TaskDataFactory.create(title=None)
 
         response = await client.post(self.url, json=task_data)
 
@@ -66,8 +64,7 @@ class TestCreateTask:
 
     async def test_empty_title(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['title'] = ''
+        task_data = TaskDataFactory.create(title='')
 
         response = await client.post(self.url, json=task_data)
 
@@ -78,8 +75,7 @@ class TestCreateTask:
 
     async def test_invalid_title(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['title'] = [1, 2, 3]
+        task_data = TaskDataFactory.create(title=[1, 2, 3])
 
         response = await client.post(self.url, json=task_data)
 
@@ -90,8 +86,7 @@ class TestCreateTask:
 
     async def test_too_long_description(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['description'] = '*' * 256
+        task_data = TaskDataFactory.create(description='*' * 256)
 
         response = await client.post(self.url, json=task_data)
 
@@ -102,8 +97,7 @@ class TestCreateTask:
 
     async def test_null_description(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['description'] = None
+        task_data = TaskDataFactory.create(description=None)
 
         response = await client.post(self.url, json=task_data)
 
@@ -114,8 +108,7 @@ class TestCreateTask:
 
     async def test_empty_description(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['description'] = ''
+        task_data = TaskDataFactory.create(description='')
 
         response = await client.post(self.url, json=task_data)
 
@@ -166,8 +159,7 @@ class TestCreateTask:
 
     async def test_invalid_description(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['description'] = [1, 2, 3]
+        task_data = TaskDataFactory.create(description= [1, 2, 3])
 
         response = await client.post(self.url, json=task_data)
 
@@ -178,8 +170,7 @@ class TestCreateTask:
 
     async def test_invalid_space(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['space'] = 'invalid'
+        task_data = TaskDataFactory.create(space='invalid')
 
         response = await client.post(self.url, json=task_data)
 
@@ -190,8 +181,7 @@ class TestCreateTask:
 
     async def test_null_space(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['space'] = None
+        task_data = TaskDataFactory.create(space=None)
 
         response = await client.post(self.url, json=task_data)
 
@@ -214,8 +204,7 @@ class TestCreateTask:
 
     async def test_unavailable_space(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['space'] = 1000
+        task_data = TaskDataFactory.create(space=1000)
 
         response = await client.post(self.url, json=task_data)
 

@@ -40,7 +40,7 @@ async def create_task(request: CreateTaskRequest) -> Record:
 
 @router.put('/tasks/{pk}/', tags=['tasks'], response_model=TaskResponse)
 async def update_task(pk: int, request: UpdateTaskRequest) -> Record:
-    update_data = request.dict(exclude_none=True)
+    update_data = request.dict(exclude_unset=True)
 
     if update_data:
         query = update(Task).where(Task.id == pk).values(**update_data).returning(Task)

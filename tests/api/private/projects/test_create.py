@@ -42,8 +42,7 @@ class TestCreateProject:
 
     async def test_too_long_title(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['title'] = '*' * 256
+        project_data = ProjectDataFactory.create(title='*' * 256)
 
         response = await client.post(self.url, json=project_data)
 
@@ -54,8 +53,7 @@ class TestCreateProject:
 
     async def test_null_title(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['title'] = None
+        project_data = ProjectDataFactory.create(title=None)
 
         response = await client.post(self.url, json=project_data)
 
@@ -78,8 +76,7 @@ class TestCreateProject:
 
     async def test_empty_title(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['title'] = ''
+        project_data = ProjectDataFactory.create(title='')
 
         response = await client.post(self.url, json=project_data)
 
@@ -90,8 +87,7 @@ class TestCreateProject:
 
     async def test_invalid_title(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['title'] = [1, 2, 3]
+        project_data = ProjectDataFactory.create(title=[1, 2, 3])
 
         response = await client.post(self.url, json=project_data)
 
@@ -102,8 +98,7 @@ class TestCreateProject:
 
     async def test_too_long_description(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['description'] = '*' * 256
+        project_data = ProjectDataFactory.create(description='*' * 256)
 
         response = await client.post(self.url, json=project_data)
 
@@ -114,8 +109,7 @@ class TestCreateProject:
 
     async def test_null_description(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['description'] = None
+        project_data = ProjectDataFactory.create(description=None)
 
         response = await client.post(self.url, json=project_data)
 
@@ -138,8 +132,7 @@ class TestCreateProject:
 
     async def test_empty_description(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['description'] = ''
+        project_data = ProjectDataFactory.create(description='')
 
         response = await client.post(self.url, json=project_data)
 
@@ -150,8 +143,7 @@ class TestCreateProject:
 
     async def test_invalid_description(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['description'] = [1, 2, 3]
+        project_data = ProjectDataFactory.create(description=[1, 2, 3])
 
         response = await client.post(self.url, json=project_data)
 
@@ -162,8 +154,7 @@ class TestCreateProject:
 
     async def test_invalid_archived(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['archived'] = 'invalid'
+        project_data = ProjectDataFactory.create(archived='invalid')
 
         response = await client.post(self.url, json=project_data)
 
@@ -174,8 +165,7 @@ class TestCreateProject:
 
     async def test_invalid_space(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['space'] = 'invalid'
+        project_data = ProjectDataFactory.create(space='invalid')
 
         response = await client.post(self.url, json=project_data)
 
@@ -186,8 +176,7 @@ class TestCreateProject:
 
     async def test_null_space(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['space'] = None
+        project_data = ProjectDataFactory.create(space=None)
 
         response = await client.post(self.url, json=project_data)
 
@@ -210,8 +199,7 @@ class TestCreateProject:
 
     async def test_unavailable_space(self, client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
-        project_data['space'] = 1000
+        project_data = ProjectDataFactory.create(space=1000)
 
         response = await client.post(self.url, json=project_data)
 

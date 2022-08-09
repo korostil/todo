@@ -39,10 +39,9 @@ class TestUpdateTask:
     async def test_not_found(self, client):
         await self._setup()
         pk = 100500
-        task_data = TaskDataFactory.create()
         url = app.url_path_for('update_task', pk=pk)
 
-        response = await client.put(url, json=task_data)
+        response = await client.put(url, json={})
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == serialize_error_response(
