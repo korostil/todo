@@ -116,3 +116,31 @@ class TestUpdateTask:
         assert response.json() == serialize_error_response(
             'bad_request', 'space 1000 is not a valid Space'
         )
+
+    async def test_due_date(self, client):
+        await self._setup()
+        task_data = {'due': '2020-01-01'}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['due'] == '2020-01-01T23:59:59'
+
+    async def test_due_datetime(self, client):
+        await self._setup()
+        expected_due = '2020-01-01T10:00:00'
+        task_data = {'due': expected_due}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['due'] == expected_due
+
+    async def test_no_due(self, client):
+        await self._setup()
+        task_data = {'due': None}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['due'] is None
