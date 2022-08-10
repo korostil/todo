@@ -49,9 +49,8 @@ class TestUpdateTag:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        tag_data = TagDataFactory.create()
 
-        response = await anonymous_client.put(self.url, json=tag_data)
+        response = await anonymous_client.put(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(
@@ -60,12 +59,44 @@ class TestUpdateTag:
 
     async def test_too_long_title(self, client):
         await self._setup()
-        tag_data = TagDataFactory.create()
-        tag_data['title'] = '*' * 32
+        tag_data = {'title': '*' * 32}
 
         response = await client.put(self.url, json=tag_data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'title ensure this value has at most 31 characters'
+        )
+
+    async def test_null_title(self, client):
+        await self._setup()
+        tag_data = {'title': None}
+
+        response = await client.put(self.url, json=tag_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title none is not an allowed value'
+        )
+
+    async def test_empty_title(self, client):
+        await self._setup()
+        tag_data = {'title': ''}
+
+        response = await client.put(self.url, json=tag_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title ensure this value has at least 1 characters'
+        )
+
+    async def test_invalid_title(self, client):
+        await self._setup()
+        tag_data = {'title': [1, 2, 3]}
+
+        response = await client.put(self.url, json=tag_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title str type expected'
         )

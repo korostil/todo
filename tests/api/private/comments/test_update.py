@@ -49,9 +49,8 @@ class TestUpdateComment:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        comment_data = CommentDataFactory.create()
 
-        response = await anonymous_client.put(self.url, json=comment_data)
+        response = await anonymous_client.put(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(
@@ -60,7 +59,7 @@ class TestUpdateComment:
 
     async def test_too_long_text(self, client):
         await self._setup()
-        comment_data = CommentDataFactory.create(text='*' * 1024)
+        comment_data = {'text': '*' * 1024}
 
         response = await client.put(self.url, json=comment_data)
 
@@ -71,7 +70,7 @@ class TestUpdateComment:
 
     async def test_null_text(self, client):
         await self._setup()
-        comment_data = CommentDataFactory.create(text=None)
+        comment_data = {'text': None}
 
         response = await client.put(self.url, json=comment_data)
 
@@ -82,7 +81,7 @@ class TestUpdateComment:
 
     async def test_empty_text(self, client):
         await self._setup()
-        comment_data = CommentDataFactory.create(text='')
+        comment_data = {'text': ''}
 
         response = await client.put(self.url, json=comment_data)
 
@@ -93,7 +92,7 @@ class TestUpdateComment:
 
     async def test_invalid_text(self, client):
         await self._setup()
-        comment_data = CommentDataFactory.create(text=[1, 2, 3])
+        comment_data = {'text': [1, 2, 3]}
 
         response = await client.put(self.url, json=comment_data)
 

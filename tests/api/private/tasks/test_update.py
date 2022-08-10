@@ -49,9 +49,8 @@ class TestUpdateTask:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        task_data = TaskDataFactory.create()
 
-        response = await anonymous_client.put(self.url, json=task_data)
+        response = await anonymous_client.put(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(
@@ -60,8 +59,7 @@ class TestUpdateTask:
 
     async def test_too_long_title(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['title'] = '*' * 256
+        task_data = {'title': '*' * 256}
 
         response = await client.put(self.url, json=task_data)
 
@@ -70,16 +68,81 @@ class TestUpdateTask:
             'bad_request', 'title ensure this value has at most 255 characters'
         )
 
+    async def test_null_title(self, client):
+        await self._setup()
+        task_data = {'title': None}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title none is not an allowed value'
+        )
+
+    async def test_empty_title(self, client):
+        await self._setup()
+        task_data = {'title': ''}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title ensure this value has at least 1 characters'
+        )
+
+    async def test_invalid_title(self, client):
+        await self._setup()
+        task_data = {'title': [1, 2, 3]}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title str type expected'
+        )
+
     async def test_too_long_description(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create()
-        task_data['description'] = '*' * 256
+        task_data = {'description': '*' * 256}
 
         response = await client.put(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'description ensure this value has at most 255 characters'
+        )
+
+    async def test_null_description(self, client):
+        await self._setup()
+        task_data = {'description': None}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'description none is not an allowed value'
+        )
+
+    async def test_empty_description(self, client):
+        await self._setup()
+        task_data = {'description': ''}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'description ensure this value has at least 1 characters'
+        )
+
+    async def test_invalid_description(self, client):
+        await self._setup()
+        task_data = {'description': [1, 2, 3]}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'description str type expected'
         )
 
     async def test_invalid_space(self, client):

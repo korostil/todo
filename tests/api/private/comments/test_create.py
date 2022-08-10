@@ -31,9 +31,8 @@ class TestCreateComment:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        comment_data = CommentDataFactory.create()
 
-        response = await anonymous_client.post(self.url, json=comment_data)
+        response = await anonymous_client.post(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(
@@ -49,6 +48,18 @@ class TestCreateComment:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'text ensure this value has at most 1023 characters'
+        )
+
+    async def test_text_required(self, client):
+        await self._setup()
+        comment_data = CommentDataFactory.create()
+        del comment_data['text']
+
+        response = await client.post(self.url, json=comment_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'text field required'
         )
 
     async def test_null_text(self, client):

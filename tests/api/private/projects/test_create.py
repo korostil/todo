@@ -31,9 +31,8 @@ class TestCreateProject:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        project_data = ProjectDataFactory.create()
 
-        response = await anonymous_client.post(self.url, json=project_data)
+        response = await anonymous_client.post(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(

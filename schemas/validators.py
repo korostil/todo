@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from services.spaces import Space
 
@@ -19,3 +20,9 @@ def validate_datetime(value: str) -> datetime | None:
         return datetime.fromisoformat(value)
     except ValueError:
         raise ValueError('invalid isoformat')
+
+
+def validate_none(value: Any) -> Any:
+    if not value:
+        raise ValueError('none is not an allowed value')
+    return value

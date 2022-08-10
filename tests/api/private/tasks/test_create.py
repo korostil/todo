@@ -31,9 +31,8 @@ class TestCreateTask:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        task_data = TaskDataFactory.create()
 
-        response = await anonymous_client.post(self.url, json=task_data)
+        response = await anonymous_client.post(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(
@@ -49,6 +48,18 @@ class TestCreateTask:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'title ensure this value has at most 255 characters'
+        )
+
+    async def test_title_required(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        del task_data['title']
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title field required'
         )
 
     async def test_null_title(self, client):
@@ -95,6 +106,18 @@ class TestCreateTask:
             'bad_request', 'description ensure this value has at most 255 characters'
         )
 
+    async def test_description_required(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        del task_data['description']
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'description field required'
+        )
+
     async def test_null_description(self, client):
         await self._setup()
         task_data = TaskDataFactory.create(description=None)
@@ -115,6 +138,17 @@ class TestCreateTask:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'description ensure this value has at least 1 characters'
+        )
+
+    async def test_invalid_description(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create(description=[1, 2, 3])
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'description str type expected'
         )
 
     async def test_invalid_due(self, client):
@@ -156,17 +190,6 @@ class TestCreateTask:
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()['data']['due'] is None
-
-    async def test_invalid_description(self, client):
-        await self._setup()
-        task_data = TaskDataFactory.create(description=[1, 2, 3])
-
-        response = await client.post(self.url, json=task_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'description str type expected'
-        )
 
     async def test_invalid_space(self, client):
         await self._setup()

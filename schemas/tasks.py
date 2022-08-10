@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, root_validator, validator
 
-from schemas.validators import validate_datetime, validate_space
+from schemas.validators import validate_datetime, validate_none, validate_space
 
 __all__ = ('TaskResponse', 'CreateTaskRequest', 'UpdateTaskRequest')
 
@@ -39,4 +39,6 @@ class UpdateTaskRequest(TaskBase):
     title: str | None = Field(None, min_length=1, max_length=255)
 
     _validate_due = validator('due', pre=True, allow_reuse=True)(validate_datetime)
+    _validate_description = validator('description', allow_reuse=True)(validate_none)
+    _validate_title = validator('title', allow_reuse=True)(validate_none)
     _validate_space = validator('space', allow_reuse=True)(validate_space)

@@ -31,9 +31,8 @@ class TestCreateTag:
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
-        tag_data = TagDataFactory.create()
 
-        response = await anonymous_client.post(self.url, json=tag_data)
+        response = await anonymous_client.post(self.url, json={})
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == serialize_error_response(
@@ -49,6 +48,18 @@ class TestCreateTag:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'title ensure this value has at most 31 characters'
+        )
+
+    async def test_title_required(self, client):
+        await self._setup()
+        tag_data = TagDataFactory.create()
+        del tag_data['title']
+
+        response = await client.post(self.url, json=tag_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'title field required'
         )
 
     async def test_null_title(self, client):
