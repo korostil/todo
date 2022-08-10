@@ -17,9 +17,9 @@
 - [ ] Recurrent task
 - [ ] Subtasks
 - [ ] Comments
-  - [ ] Simple text
   - [ ] File upload to storage
   - [ ] Link
+  - [ ] security issues?
 - [ ] Goal model
   - [ ] daily/weekly/monthly/yearly
 - [ ] daily/weekly/monthly/yearly review
@@ -27,4 +27,8 @@
 - [ ] monitor?
 - [ ] pomodoro
 - [ ] refactor api views to reduce copy-paste code
+- [ ] Tags
+  - [ ] link tags to task
+  - [ ] make tags hierarchical
+- [ ] change id to UUID?
 - [ ]
