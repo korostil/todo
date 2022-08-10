@@ -3,16 +3,15 @@
 - [ ] Project description
 - [ ] Speed up tests
 - [ ] Extend task model
-  - [ ] priority
-  - [ ] labels
+  - [ ] priority (only in project view)
+  - [ ] tags
+  - [ ] link to project
 - [ ] Extend project model
-- [ ] Label model
-      - [ ] CRUD
+  - [ ] Color
 - [ ] Move to poetry
 - [ ] Yandex.Cloud
 - [ ] Tasks archive
   - [ ] search
-  - [ ] reopen task
   - [ ] filter by date
   - [ ] filter by label
 - [ ] Recurrent task
@@ -27,4 +26,5 @@
 - [ ] logger?
 - [ ] monitor?
 - [ ] pomodoro
+- [ ] refactor api views to reduce copy-paste code
 - [ ]

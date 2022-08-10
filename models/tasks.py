@@ -2,6 +2,8 @@ from sqlalchemy import Column, DateTime, Integer, String, func
 
 from app.database import BaseDBModel
 
+__all__ = ('Task',)
+
 
 class Task(BaseDBModel):
     __tablename__ = 'task'
