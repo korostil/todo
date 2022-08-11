@@ -11,6 +11,7 @@ class Project(BaseDBModel):
     id = Column(Integer, primary_key=True)
 
     archived_at = Column(DateTime)
+    color = Column(String(6))  # hexadecimal
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     description = Column(String(256), nullable=False)
     space = Column(Integer, nullable=False)

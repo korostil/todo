@@ -7,6 +7,7 @@ from tests.api.helpers import serialize_response
 def serialize_project(project: Project) -> dict:
     return {
         'archived_at': project.archived_at.isoformat() if project.archived_at else None,
+        'color': project.color,
         'created_at': project.created_at.isoformat() if project.created_at else None,
         'description': project.description,
         'id': project.id,

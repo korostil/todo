@@ -195,3 +195,36 @@ class TestCreateProject:
         assert response.json() == serialize_error_response(
             'bad_request', 'space 1000 is not a valid Space'
         )
+
+    async def test_invalid_color_type(self, client):
+        await self._setup()
+        project_data = ProjectDataFactory.create(color=['1'] * 6)
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'color str type expected'
+        )
+
+    @pytest.mark.parametrize(
+        'color', ['RRRRRR', 'FFF'], ids=['out_of_range', 'too_short']
+    )
+    async def test_invalid_color(self, client, color):
+        await self._setup()
+        project_data = ProjectDataFactory.create(color=color)
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'color string does not match regex "[a-fA-F0-9]{6}"'
+        )
+
+    async def test_null_color(self, client):
+        await self._setup()
+        project_data = ProjectDataFactory.create(color=None)
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_201_CREATED

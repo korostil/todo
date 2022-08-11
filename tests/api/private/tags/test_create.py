@@ -94,3 +94,33 @@ class TestCreateTag:
         assert response.json() == serialize_error_response(
             'bad_request', 'title str type expected'
         )
+
+    async def test_invalid_color_type(self, client):
+        await self._setup()
+        tag_data = TagDataFactory.create(color=['1'] * 6)
+
+        response = await client.post(self.url, json=tag_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'color str type expected'
+        )
+
+    @pytest.mark.parametrize(
+        'color', ['RRRRRR', 'FFF'], ids=['out_of_range', 'too_short']
+    )
+    async def test_invalid_color(self, client, color):
+        await self._setup()
+        tag_data = TagDataFactory.create(color=color)
+
+        response = await client.post(self.url, json=tag_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'color string does not match regex "[a-fA-F0-9]{6}"'
+        )
+
+    async def test_null_color(self, client):
+        await self._setup()
+        response = await client.post(self.url, json=TagDataFactory.create(color=None))
+        assert response.status_code == status.HTTP_201_CREATED

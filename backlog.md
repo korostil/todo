@@ -1,5 +1,4 @@
 # backlog
-- [ ] fix pre-commit
 - [ ] Project description
 - [ ] Speed up tests
 - [ ] Extend task model
@@ -7,7 +6,7 @@
   - [ ] tags
   - [ ] link to project
 - [ ] Extend project model
-  - [ ] Color
+  - [ ] subproject?
 - [ ] Move to poetry
 - [ ] Yandex.Cloud
 - [ ] Tasks archive
@@ -31,4 +30,6 @@
   - [ ] link tags to task
   - [ ] make tags hierarchical
 - [ ] change id to UUID?
+- [ ] linked tasks (example, two nearly placed tasks: "pick up something" and "buy the thing")
+- [ ] fix pre-commit (upgrade package version)
 - [ ]

@@ -10,6 +10,7 @@ class Tag(BaseDBModel):
 
     id = Column(Integer, primary_key=True)
 
+    color = Column(String(6))  # hexadecimal
     title = Column(String(32), nullable=False)
 
     def __repr__(self) -> str:

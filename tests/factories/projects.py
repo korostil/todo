@@ -11,6 +11,7 @@ __all__ = ('ProjectFactory', 'ProjectDataFactory')
 
 
 class ProjectDataFactory(factory.DictFactory):
+    color = 'FED951'
     description = factory.Faker('sentence')
     title = factory.Faker('slug')
     space = Space.WORK.value

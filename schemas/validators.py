@@ -26,3 +26,6 @@ def validate_none(value: Any) -> Any:
     if not value:
         raise ValueError('none is not an allowed value')
     return value
+
+
+HEX_COLOR_REGEX = '[a-fA-F0-9]{6}'
