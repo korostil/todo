@@ -8,6 +8,7 @@ def serialize_task(task: Task) -> dict:
     return {
         'created_at': task.created_at.isoformat(),
         'completed_at': task.completed_at.isoformat() if task.completed_at else None,
+        'decisive': task.decisive,
         'description': task.description,
         'due': task.due.isoformat() if task.due else None,
         'id': task.id,

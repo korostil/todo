@@ -23,7 +23,7 @@ def validate_datetime(value: str) -> datetime | None:
 
 
 def validate_none(value: Any) -> Any:
-    if not value:
+    if value is None:
         raise ValueError('none is not an allowed value')
     return value
 

@@ -205,3 +205,25 @@ class TestUpdateTask:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json()['data']['due'] is None
+
+    async def test_invalid_decisive(self, client):
+        await self._setup()
+        task_data = {'decisive': 'invalid'}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'decisive value could not be parsed to a boolean'
+        )
+
+    async def test_null_decisive(self, client):
+        await self._setup()
+        task_data = {'decisive': None}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'decisive none is not an allowed value'
+        )

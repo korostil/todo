@@ -1,6 +1,7 @@
 # backlog
 - [ ] Project description
 - [ ] Speed up tests
+- [ ] Default project ("Inbox")
 - [ ] Extend task model
   - [ ] priority (only in project view)
   - [ ] tags

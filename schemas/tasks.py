@@ -8,6 +8,7 @@ __all__ = ('TaskResponse', 'CreateTaskRequest', 'UpdateTaskRequest')
 
 
 class TaskBase(BaseModel):
+    decisive: bool | None
     description: str | None
     due: datetime | None
     title: str | None
@@ -17,6 +18,7 @@ class TaskBase(BaseModel):
 class TaskResponse(TaskBase):
     created_at: datetime
     completed_at: datetime | None
+    decisive: bool
     id: int
 
     @root_validator
@@ -26,6 +28,7 @@ class TaskResponse(TaskBase):
 
 
 class CreateTaskRequest(TaskBase):
+    decisive: bool = False
     description: str = Field(min_length=1, max_length=255)
     title: str = Field(min_length=1, max_length=255)
     space: int
@@ -38,7 +41,8 @@ class UpdateTaskRequest(TaskBase):
     description: str | None = Field(None, min_length=1, max_length=255)
     title: str | None = Field(None, min_length=1, max_length=255)
 
-    _validate_due = validator('due', pre=True, allow_reuse=True)(validate_datetime)
+    _validate_decisive = validator('decisive', allow_reuse=True)(validate_none)
     _validate_description = validator('description', allow_reuse=True)(validate_none)
+    _validate_due = validator('due', pre=True, allow_reuse=True)(validate_datetime)
     _validate_title = validator('title', allow_reuse=True)(validate_none)
     _validate_space = validator('space', allow_reuse=True)(validate_space)

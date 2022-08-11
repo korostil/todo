@@ -11,6 +11,7 @@ __all__ = ('TaskFactory', 'TaskDataFactory')
 
 
 class TaskDataFactory(factory.DictFactory):
+    decisive = False
     description = factory.Faker('sentence')
     due = (datetime.now() + timedelta(minutes=1)).isoformat()
     title = factory.Faker('slug')

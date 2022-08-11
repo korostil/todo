@@ -235,3 +235,34 @@ class TestCreateTask:
         assert response.json() == serialize_error_response(
             'bad_request', 'space 1000 is not a valid Space'
         )
+
+    async def test_default_decisive(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create()
+        del task_data['decisive']
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+    async def test_invalid_decisive(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create(decisive='invalid')
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'decisive value could not be parsed to a boolean'
+        )
+
+    async def test_null_decisive(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create(decisive=None)
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'decisive none is not an allowed value'
+        )

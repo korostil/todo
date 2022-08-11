@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
 
 from app.database import BaseDBModel
 
@@ -12,6 +12,7 @@ class Task(BaseDBModel):
 
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     completed_at = Column(DateTime)
+    decisive = Column(Boolean, nullable=False)
     description = Column(String(256), nullable=False)
     due = Column(DateTime)
     space = Column(Integer, nullable=False)
