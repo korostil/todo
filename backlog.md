@@ -21,7 +21,7 @@
   - [ ] Link
   - [ ] security issues?
 - [ ] Goal model
-  - [ ] daily/weekly/monthly/yearly
+  - [ ] status of the goal (new, planned, completed)
 - [ ] daily/weekly/monthly/yearly review
 - [ ] logger?
 - [ ] monitor?
