@@ -9,6 +9,7 @@ def serialize_goal(goal: Goal) -> dict:
         'created_at': goal.created_at.isoformat(),
         'id': goal.id,
         'month': goal.month,
+        'projects': goal.projects or [],
         'title': goal.title,
         'week': goal.week,
         'year': goal.year,

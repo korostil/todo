@@ -1,4 +1,5 @@
 from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy.orm import relationship
 
 from app.database import BaseDBModel
 
@@ -12,6 +13,7 @@ class Goal(BaseDBModel):
 
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     month = Column(Integer)
+    projects = relationship('Project', back_populates='goal')
     title = Column(String(256), nullable=False)
     week = Column(Integer)
     year = Column(Integer)

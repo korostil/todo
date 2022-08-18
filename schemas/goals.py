@@ -17,6 +17,7 @@ class GoalBase(BaseModel):
 class GoalResponse(GoalBase):
     created_at: datetime
     id: int
+    projects: list[int]
 
 
 class CreateGoalRequest(GoalBase):

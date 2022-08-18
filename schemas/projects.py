@@ -10,6 +10,7 @@ __all__ = ('ProjectResponse', 'CreateProjectRequest', 'UpdateProjectRequest')
 class ProjectBase(BaseModel):
     color: str | None
     description: str | None
+    goal_id: int | None
     title: str | None
     space: int | None
 

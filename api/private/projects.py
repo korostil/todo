@@ -1,3 +1,4 @@
+import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, Query, status
 from sqlalchemy import delete, func, insert, select, update
@@ -6,6 +7,8 @@ from api.exceptions import NotFound
 from app.database import database
 from models import Project
 from schemas.projects import CreateProjectRequest, ProjectResponse, UpdateProjectRequest
+from services.exceptions import DoesNotExist
+from services.goals import get_one_goal
 
 router = APIRouter()
 
@@ -41,6 +44,11 @@ async def read_project(pk: int) -> Record:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_project(request: CreateProjectRequest) -> Record:
+    with funcy.reraise(
+        DoesNotExist, NotFound(f'goal with pk={request.goal_id} not found')
+    ):
+        await get_one_goal(pk=request.goal_id)
+
     query = insert(Project).values(**request.dict()).returning(Project)
     project = await database.fetch_one(query)
     return project  # type: ignore
@@ -49,6 +57,10 @@ async def create_project(request: CreateProjectRequest) -> Record:
 @router.put('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
 async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
     update_data = request.dict(exclude_unset=True)
+    goal_id = update_data.get('goal_id')
+
+    with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={goal_id} not found')):
+        await get_one_goal(pk=goal_id)
 
     if update_data:
         query = (

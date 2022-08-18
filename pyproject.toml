@@ -52,4 +52,4 @@ warn_no_return = false
 warn_unreachable = true
 strict_equality = true
 warn_redundant_casts = true
-exclude = ["venv", "tests"]
+exclude = ["venv", "tests", "alembic"]

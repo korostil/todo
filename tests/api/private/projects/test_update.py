@@ -7,7 +7,7 @@ from main import app
 from models import Project
 from tests.api.helpers import serialize_error_response
 from tests.api.private.projects.helpers import serialize_project_response
-from tests.factories import ProjectDataFactory, ProjectFactory
+from tests.factories import GoalFactory, ProjectDataFactory, ProjectFactory
 
 pytestmark = [pytest.mark.asyncio]
 
@@ -210,3 +210,36 @@ class TestUpdateProject:
         await self._setup()
         response = await client.put(self.url, json={'color': None})
         assert response.status_code == status.HTTP_200_OK
+
+    async def test_link_goal(self, client):
+        await self._setup()
+        goal = await GoalFactory.create()
+        project_data = {'goal_id': goal.id}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['goal_id'] == goal.id
+
+    async def test_goal_not_found(self, client):
+        await self._setup()
+        pk = 100500
+        project_data = {'goal_id': pk}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == serialize_error_response(
+            'not_found', f'goal with pk={pk} not found'
+        )
+
+    async def test_invalid_goal(self, client):
+        await self._setup()
+        project_data = {'goal_id': 'invalid'}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'goal_id value is not a valid integer'
+        )

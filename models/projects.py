@@ -1,4 +1,5 @@
-from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy.orm import relationship
 
 from app.database import BaseDBModel
 
@@ -14,6 +15,8 @@ class Project(BaseDBModel):
     color = Column(String(6))  # hexadecimal
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     description = Column(String(256), nullable=False)
+    goal_id = Column(Integer, ForeignKey('goal.id'))
+    goal = relationship('Goal', back_populates='projects')
     space = Column(Integer, nullable=False)
     title = Column(String(256), nullable=False)
 

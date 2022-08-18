@@ -10,6 +10,7 @@ def serialize_project(project: Project) -> dict:
         'color': project.color,
         'created_at': project.created_at.isoformat() if project.created_at else None,
         'description': project.description,
+        'goal_id': project.goal_id,
         'id': project.id,
         'is_archived': project.archived_at is not None,
         'title': project.title,

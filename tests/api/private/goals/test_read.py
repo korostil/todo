@@ -1,9 +1,10 @@
+import funcy
 from fastapi import status
 
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.goals.helpers import serialize_goal_response
-from tests.factories import GoalFactory
+from tests.factories import GoalFactory, ProjectFactory
 
 
 class TestReadGoal:
@@ -39,3 +40,12 @@ class TestReadGoal:
         assert response.json() == serialize_error_response(
             'forbidden', 'Not authenticated'
         )
+
+    async def test_related_projects(self, client):
+        await self._setup()
+        projects = await ProjectFactory.create_batch(size=2, goal_id=self.goal.id)
+
+        response = await client.get(self.url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['projects'] == funcy.lpluck_attr('id', projects)
