@@ -1,5 +1,4 @@
 import factory
-import funcy
 
 from models import Goal
 from tests.factories.base import AsyncFactory
@@ -16,7 +15,6 @@ class GoalDataFactory(factory.DictFactory):
 
 class GoalFactory(AsyncFactory, GoalDataFactory):
     created_at = factory.Faker('date_time')
-    id = factory.Sequence(funcy.identity)
 
     class Meta:
         model = Goal

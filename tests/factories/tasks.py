@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import factory
-import funcy
 
 from models import Task
 from services.spaces import Space
@@ -28,7 +27,6 @@ class TaskFactory(AsyncFactory, TaskDataFactory):
     created_at = factory.Faker('date_time')
     completed_at = None
     due = factory.Faker('date_time')
-    id = factory.Sequence(funcy.identity)
 
     class Meta:
         model = Task

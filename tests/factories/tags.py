@@ -1,5 +1,4 @@
 import factory
-import funcy
 
 from models import Tag
 from tests.factories.base import AsyncFactory
@@ -12,7 +11,7 @@ class TagDataFactory(factory.DictFactory):
 
 
 class TagFactory(AsyncFactory, TagDataFactory):
-    id = factory.Sequence(funcy.identity)
+    ...
 
     class Meta:
         model = Tag

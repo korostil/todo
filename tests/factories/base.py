@@ -1,18 +1,20 @@
 import asyncio
 
-from factory.alchemy import SQLAlchemyModelFactory
+import factory
 from sqlalchemy import insert
 
 from app.database import database
 
 
-class AsyncFactory(SQLAlchemyModelFactory):
+class AsyncFactory(factory.alchemy.SQLAlchemyModelFactory):
+    id = factory.Sequence(lambda x: x + 1)
+
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         async def maker_coroutine():
             query = insert(model_class).values(**kwargs).returning(model_class)
-            project = await database.fetch_one(query)
-            return project
+            record = await database.fetch_one(query)
+            return record
 
         return asyncio.create_task(maker_coroutine())
 

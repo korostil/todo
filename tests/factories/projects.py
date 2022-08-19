@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import factory
-import funcy
 
 from models import Project
 from services.spaces import Space
@@ -19,7 +18,6 @@ class ProjectDataFactory(factory.DictFactory):
 
 
 class ProjectFactory(AsyncFactory, ProjectDataFactory):
-    id = factory.Sequence(funcy.identity)
     archived_at = None
 
     class Meta:

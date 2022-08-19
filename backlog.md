@@ -1,5 +1,4 @@
 # backlog
-- [ ] Start every table id from 1
 - [ ] Optimize relationship queries (ex.: goal-projects)
 - [ ] Project description
 - [ ] Speed up tests
