@@ -127,3 +127,48 @@ class TestCreateGoal:
         assert response.json() == serialize_error_response(
             'bad_request', 'year value is not a valid integer'
         )
+
+    async def test_invalid_status(self, client):
+        await self._setup()
+        project_data = GoalDataFactory.create(status='invalid')
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'status value is not a valid integer'
+        )
+
+    async def test_null_space(self, client):
+        await self._setup()
+        project_data = GoalDataFactory.create(status=None)
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'status none is not an allowed value'
+        )
+
+    async def test_space_required(self, client):
+        await self._setup()
+        project_data = GoalDataFactory.create()
+        del project_data['status']
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'status field required'
+        )
+
+    async def test_unavailable_space(self, client):
+        await self._setup()
+        project_data = GoalDataFactory.create(status=1000)
+
+        response = await client.post(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'status 1000 is not a valid Status'
+        )

@@ -1,11 +1,17 @@
 from datetime import datetime
 from typing import Any
 
+from models.goals import Status
 from services.spaces import Space
 
 
 def validate_space(value: int) -> int:
     Space(value)
+    return value
+
+
+def validate_status(value: int) -> int:
+    Status(value)
     return value
 
 

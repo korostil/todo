@@ -10,6 +10,7 @@ def serialize_goal(goal: Goal) -> dict:
         'id': goal.id,
         'month': goal.month,
         'projects': goal.projects or [],
+        'status': goal.status,
         'title': goal.title,
         'week': goal.week,
         'year': goal.year,
