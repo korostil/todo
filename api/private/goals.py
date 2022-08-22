@@ -70,8 +70,9 @@ async def update_goal(pk: int, request: UpdateGoalRequest) -> dict:
         raise NotFound(f'goal with pk={pk} not found')
 
     response = dict(goal)
-    response['projects'] = []
-
+    response['projects'] = funcy.lpluck_attr(
+        'id', await database.fetch_all(select(Project).filter(Project.goal_id == pk))
+    )
     return response
 
 
