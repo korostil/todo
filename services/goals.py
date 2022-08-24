@@ -1,18 +1,9 @@
-from databases.interfaces import Record
-from sqlalchemy import select
+import funcy
 
-from app.database import database
 from models import Goal
-from services.exceptions import DoesNotExist
+from services.database import create_one, delete_one, get_one, update_one
 
-
-async def get_one_goal(pk: int | None = None) -> Record | None:
-    if pk is None:
-        return None
-
-    query = select(Goal).filter(Goal.id == pk)
-    goal = await database.fetch_one(query)
-    if goal is None:
-        raise DoesNotExist
-
-    return goal
+create_one_goal = funcy.partial(create_one, model=Goal)
+delete_one_goal = funcy.partial(delete_one, model=Goal)
+get_one_goal = funcy.partial(get_one, model=Goal)
+update_one_goal = funcy.partial(update_one, model=Goal)

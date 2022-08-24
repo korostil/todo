@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 from app.database import BaseDBModel
 
-__all__ = ('Goal', 'Status',)
+__all__ = ('Goal', 'Status')
 
 
 class Status(Enum):

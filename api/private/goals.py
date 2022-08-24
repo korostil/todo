@@ -1,13 +1,13 @@
 import funcy
 from fastapi import APIRouter, status
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, select
 
 from api.exceptions import NotFound
 from app.database import database
 from models import Goal, Project
 from schemas.goals import CreateGoalRequest, GoalResponse, UpdateGoalRequest
 from services.exceptions import DoesNotExist
-from services.goals import get_one_goal
+from services.goals import create_one_goal, get_one_goal, update_one_goal
 
 router = APIRouter()
 
@@ -35,7 +35,7 @@ async def read_goal(pk: int) -> dict:
     with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={pk} not found')):
         goal = await get_one_goal(pk=pk)
 
-    response = dict(goal)  # type: ignore
+    response = dict(goal)
     response['projects'] = funcy.lpluck_attr(
         'id', await database.fetch_all(select(Project).filter(Project.goal_id == pk))
     )
@@ -49,9 +49,8 @@ async def read_goal(pk: int) -> dict:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_goal(request: CreateGoalRequest) -> dict:
-    query = insert(Goal).values(**request.dict()).returning(Goal)
-    goal = await database.fetch_one(query)
-    response = dict(goal)  # type: ignore
+    goal = await create_one_goal(data=request.dict())
+    response = dict(goal)
     response['projects'] = []
     return response
 
@@ -60,14 +59,8 @@ async def create_goal(request: CreateGoalRequest) -> dict:
 async def update_goal(pk: int, request: UpdateGoalRequest) -> dict:
     update_data = request.dict(exclude_unset=True)
 
-    if update_data:
-        query = update(Goal).where(Goal.id == pk).values(**update_data).returning(Goal)
-    else:
-        query = select(Goal).where(Goal.id == pk)
-
-    goal = await database.fetch_one(query)
-    if goal is None:
-        raise NotFound(f'goal with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={pk} not found')):
+        goal = await update_one_goal(pk=pk, data=update_data)
 
     response = dict(goal)
     response['projects'] = funcy.lpluck_attr(

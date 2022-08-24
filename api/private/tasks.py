@@ -1,11 +1,19 @@
+import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, status
-from sqlalchemy import delete, func, insert, select, update
+from sqlalchemy import func, select
 
 from api.exceptions import NotFound
 from app.database import database
 from models import Task
 from schemas.tasks import CreateTaskRequest, TaskResponse, UpdateTaskRequest
+from services.exceptions import DoesNotExist
+from services.tasks import (
+    create_one_task,
+    delete_one_task,
+    get_one_task,
+    update_one_task,
+)
 
 router = APIRouter()
 
@@ -19,10 +27,8 @@ async def read_tasks_list() -> list[Record]:
 
 @router.get('/tasks/{pk}/', tags=['tasks'], response_model=TaskResponse)
 async def read_task(pk: int) -> Record:
-    query = select(Task).filter(Task.id == pk)
-    task = await database.fetch_one(query)
-    if task is None:
-        raise NotFound(f'task with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'task with pk={pk} not found')):
+        task: Record = await get_one_task(pk=pk)
     return task
 
 
@@ -33,33 +39,24 @@ async def read_task(pk: int) -> Record:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_task(request: CreateTaskRequest) -> Record:
-    query = insert(Task).values(**request.dict()).returning(Task)
-    task = await database.fetch_one(query)
-    return task  # type: ignore
+    task: Record = await create_one_task(data=request.dict())
+    return task
 
 
 @router.put('/tasks/{pk}/', tags=['tasks'], response_model=TaskResponse)
 async def update_task(pk: int, request: UpdateTaskRequest) -> Record:
     update_data = request.dict(exclude_unset=True)
 
-    if update_data:
-        query = update(Task).where(Task.id == pk).values(**update_data).returning(Task)
-    else:
-        query = select(Task).where(Task.id == pk)
-
-    task = await database.fetch_one(query)
-    if task is None:
-        raise NotFound(f'task with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'task with pk={pk} not found')):
+        task: Record = await update_one_task(pk=pk, data=update_data)
 
     return task
 
 
 @router.delete('/tasks/{pk}/', tags=['tasks'], status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(pk: int) -> None:
-    query = delete(Task).where(Task.id == pk).returning(Task.id)
-    task = await database.fetch_val(query)
-    if task is None:
-        raise NotFound(f'task with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'task with pk={pk} not found')):
+        await delete_one_task(pk=pk)
 
 
 @router.post(
@@ -69,17 +66,8 @@ async def delete_task(pk: int) -> None:
     status_code=status.HTTP_200_OK,
 )
 async def complete_task(pk: int) -> Record:
-    query = (
-        update(Task)
-        .where(Task.id == pk)
-        .values(completed_at=func.now())
-        .returning(Task)
-    )
-
-    task = await database.fetch_one(query)
-    if task is None:
-        raise NotFound(f'task with pk={pk} not found')
-
+    with funcy.reraise(DoesNotExist, NotFound(f'task with pk={pk} not found')):
+        task: Record = await update_one_task(pk=pk, data={'completed_at': func.now()})
     return task
 
 
@@ -90,10 +78,6 @@ async def complete_task(pk: int) -> Record:
     status_code=status.HTTP_200_OK,
 )
 async def reopen_task(pk: int) -> Record:
-    query = update(Task).where(Task.id == pk).values(completed_at=None).returning(Task)
-
-    task = await database.fetch_one(query)
-    if task is None:
-        raise NotFound(f'task with pk={pk} not found')
-
+    with funcy.reraise(DoesNotExist, NotFound(f'task with pk={pk} not found')):
+        task: Record = await update_one_task(pk=pk, data={'completed_at': None})
     return task

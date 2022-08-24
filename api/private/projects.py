@@ -1,7 +1,7 @@
 import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, Query, status
-from sqlalchemy import delete, func, insert, select, update
+from sqlalchemy import func, select
 
 from api.exceptions import NotFound
 from app.database import database
@@ -9,6 +9,12 @@ from models import Project
 from schemas.projects import CreateProjectRequest, ProjectResponse, UpdateProjectRequest
 from services.exceptions import DoesNotExist
 from services.goals import get_one_goal
+from services.projects import (
+    create_one_project,
+    delete_one_project,
+    get_one_project,
+    update_one_project,
+)
 
 router = APIRouter()
 
@@ -30,10 +36,8 @@ async def read_projects_list(archived: bool | None = Query(None)) -> list[Record
 
 @router.get('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
 async def read_project(pk: int) -> Record:
-    query = select(Project).filter(Project.id == pk)
-    project = await database.fetch_one(query)
-    if project is None:
-        raise NotFound(f'project with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
+        project: Record = await get_one_project(pk=pk)
     return project
 
 
@@ -49,9 +53,8 @@ async def create_project(request: CreateProjectRequest) -> Record:
     ):
         await get_one_goal(pk=request.goal_id)
 
-    query = insert(Project).values(**request.dict()).returning(Project)
-    project = await database.fetch_one(query)
-    return project  # type: ignore
+    project: Record = await create_one_project(data=request.dict())
+    return project
 
 
 @router.put('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
@@ -62,19 +65,8 @@ async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
     with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={goal_id} not found')):
         await get_one_goal(pk=goal_id)
 
-    if update_data:
-        query = (
-            update(Project)
-            .where(Project.id == pk)
-            .values(**update_data)
-            .returning(Project)
-        )
-    else:
-        query = select(Project).where(Project.id == pk)
-
-    project = await database.fetch_one(query)
-    if project is None:
-        raise NotFound(f'project with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
+        project: Record = await update_one_project(pk=pk, data=update_data)
 
     return project
 
@@ -83,10 +75,8 @@ async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
     '/projects/{pk}/', tags=['projects'], status_code=status.HTTP_204_NO_CONTENT
 )
 async def delete_project(pk: int) -> None:
-    query = delete(Project).where(Project.id == pk).returning(Project.id)
-    project = await database.fetch_val(query)
-    if project is None:
-        raise NotFound(f'project with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
+        await delete_one_project(pk=pk)
 
 
 @router.post(
@@ -96,17 +86,10 @@ async def delete_project(pk: int) -> None:
     status_code=status.HTTP_200_OK,
 )
 async def archive_project(pk: int) -> Record:
-    query = (
-        update(Project)
-        .where(Project.id == pk)
-        .values(archived_at=func.now())
-        .returning(Project)
-    )
-
-    project = await database.fetch_one(query)
-    if project is None:
-        raise NotFound(f'project with pk={pk} not found')
-
+    with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
+        project: Record = await update_one_project(
+            pk=pk, data={'archived_at': func.now()}
+        )
     return project
 
 
@@ -117,15 +100,6 @@ async def archive_project(pk: int) -> Record:
     status_code=status.HTTP_200_OK,
 )
 async def restore_project(pk: int) -> Record:
-    query = (
-        update(Project)
-        .where(Project.id == pk)
-        .values(archived_at=None)
-        .returning(Project)
-    )
-
-    project = await database.fetch_one(query)
-    if project is None:
-        raise NotFound(f'project with pk={pk} not found')
-
+    with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
+        project: Record = await update_one_project(pk=pk, data={'archived_at': None})
     return project

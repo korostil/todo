@@ -31,7 +31,7 @@ class CreateGoalRequest(GoalBase):
 
 
 class UpdateGoalRequest(GoalBase):
-    status: int | None
+    status: int | None  # type: ignore
     title: str | None = Field(None, min_length=1, max_length=255)
 
     _validate_status = validator('status', allow_reuse=True)(validate_status)

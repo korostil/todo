@@ -1,11 +1,14 @@
+import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, status
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import select
 
 from api.exceptions import NotFound
 from app.database import database
 from models import Tag
 from schemas.tags import CreateTagRequest, TagResponse, UpdateTagRequest
+from services.exceptions import DoesNotExist
+from services.tags import create_one_tag, delete_one_tag, get_one_tag, update_one_tag
 
 router = APIRouter()
 
@@ -19,10 +22,8 @@ async def read_tags_list() -> list[Record]:
 
 @router.get('/tags/{pk}/', tags=['tasks'], response_model=TagResponse)
 async def read_tag(pk: int) -> Record:
-    query = select(Tag).filter(Tag.id == pk)
-    tag = await database.fetch_one(query)
-    if tag is None:
-        raise NotFound(f'tag with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'tag with pk={pk} not found')):
+        tag: Record = await get_one_tag(pk=pk)
     return tag
 
 
@@ -33,30 +34,21 @@ async def read_tag(pk: int) -> Record:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_tag(request: CreateTagRequest) -> Record:
-    query = insert(Tag).values(**request.dict()).returning(Tag)
-    tag = await database.fetch_one(query)
-    return tag  # type: ignore
+    tag: Record = await create_one_tag(data=request.dict())
+    return tag
 
 
 @router.put('/tags/{pk}/', tags=['tasks'], response_model=TagResponse)
 async def update_tag(pk: int, request: UpdateTagRequest) -> Record:
     update_data = request.dict(exclude_unset=True)
 
-    if update_data:
-        query = update(Tag).where(Tag.id == pk).values(**update_data).returning(Tag)
-    else:
-        query = select(Tag).where(Tag.id == pk)
-
-    tag = await database.fetch_one(query)
-    if tag is None:
-        raise NotFound(f'tag with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'tag with pk={pk} not found')):
+        tag: Record = await update_one_tag(pk=pk, data=update_data)
 
     return tag
 
 
 @router.delete('/tags/{pk}/', tags=['tasks'], status_code=status.HTTP_204_NO_CONTENT)
 async def delete_tag(pk: int) -> None:
-    query = delete(Tag).where(Tag.id == pk).returning(Tag.id)
-    tag = await database.fetch_val(query)
-    if tag is None:
-        raise NotFound(f'tag with pk={pk} not found')
+    with funcy.reraise(DoesNotExist, NotFound(f'tag with pk={pk} not found')):
+        await delete_one_tag(pk=pk)

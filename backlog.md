@@ -6,9 +6,6 @@
 - [ ] Extend task model
   - [ ] priority (only in project view)
   - [ ] tags
-  - [ ] link to project
-- [ ] Extend project model
-  - [ ] subproject?
 - [ ] Move to poetry
 - [ ] Yandex.Cloud
 - [ ] Tasks archive
@@ -25,11 +22,12 @@
 - [ ] logger?
 - [ ] monitor?
 - [ ] pomodoro
-- [ ] refactor api views to reduce copy-paste code
 - [ ] Tags
   - [ ] link tags to task
   - [ ] make tags hierarchical
 - [ ] change id to UUID?
 - [ ] linked tasks (example, two nearly placed tasks: "pick up something" and "buy the thing")
 - [ ] fix pre-commit (upgrade package version)
+- [ ] Extend project model
+  - [ ] subproject?
 - [ ]

@@ -133,7 +133,7 @@ class TestUpdateGoal:
         assert response.json() == serialize_error_response(
             'bad_request', 'year value is not a valid integer'
         )
-        
+
     async def test_invalid_status(self, client):
         await self._setup()
         project_data = {'status': 'invalid'}
