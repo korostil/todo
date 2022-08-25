@@ -14,6 +14,7 @@ class TaskDataFactory(factory.DictFactory):
     description = factory.Faker('sentence')
     due = (datetime.now() + timedelta(minutes=1)).isoformat()
     title = factory.Faker('slug')
+    project_id = None
     space = Space.WORK.value
 
     class Params:

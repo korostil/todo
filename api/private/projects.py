@@ -1,26 +1,21 @@
 import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 
 from api.exceptions import NotFound
 from app.database import database
-from models import Project
+from models import Project, Task
 from schemas.projects import CreateProjectRequest, ProjectResponse, UpdateProjectRequest
 from services.exceptions import DoesNotExist
 from services.goals import get_one_goal
-from services.projects import (
-    create_one_project,
-    delete_one_project,
-    get_one_project,
-    update_one_project,
-)
+from services.projects import create_one_project, get_one_project, update_one_project
 
 router = APIRouter()
 
 
 @router.get('/projects/', tags=['projects'], response_model=list[ProjectResponse])
-async def read_projects_list(archived: bool | None = Query(None)) -> list[Record]:
+async def read_projects_list(archived: bool | None = Query(None)) -> list[dict]:
     query = select(Project)
 
     if archived is not None:
@@ -31,14 +26,30 @@ async def read_projects_list(archived: bool | None = Query(None)) -> list[Record
         )
 
     projects = await database.fetch_all(query)
-    return projects
+
+    response = []
+    for project in projects:
+        response_item = dict(project)
+        response_item['tasks'] = funcy.lpluck_attr(
+            'id',
+            await database.fetch_all(
+                select(Task).filter(Task.project_id == response_item['id'])
+            ),
+        )
+        response.append(response_item)
+    return response
 
 
 @router.get('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
-async def read_project(pk: int) -> Record:
+async def read_project(pk: int) -> dict:
     with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
-        project: Record = await get_one_project(pk=pk)
-    return project
+        project = await get_one_project(pk=pk)
+
+    response = dict(project)
+    response['tasks'] = funcy.lpluck_attr(
+        'id', await database.fetch_all(select(Task).filter(Task.project_id == pk))
+    )
+    return response
 
 
 @router.post(
@@ -47,18 +58,20 @@ async def read_project(pk: int) -> Record:
     response_model=ProjectResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_project(request: CreateProjectRequest) -> Record:
+async def create_project(request: CreateProjectRequest) -> dict:
     with funcy.reraise(
         DoesNotExist, NotFound(f'goal with pk={request.goal_id} not found')
     ):
         await get_one_goal(pk=request.goal_id)
 
-    project: Record = await create_one_project(data=request.dict())
-    return project
+    project = await create_one_project(data=request.dict())
+    response = dict(project)
+    response['tasks'] = []
+    return response
 
 
 @router.put('/projects/{pk}/', tags=['projects'], response_model=ProjectResponse)
-async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
+async def update_project(pk: int, request: UpdateProjectRequest) -> dict:
     update_data = request.dict(exclude_unset=True)
     goal_id = update_data.get('goal_id')
 
@@ -66,9 +79,13 @@ async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
         await get_one_goal(pk=goal_id)
 
     with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
-        project: Record = await update_one_project(pk=pk, data=update_data)
+        project = await update_one_project(pk=pk, data=update_data)
 
-    return project
+    response = dict(project)
+    response['tasks'] = funcy.lpluck_attr(
+        'id', await database.fetch_all(select(Task).filter(Task.project_id == pk))
+    )
+    return response
 
 
 @router.delete(
@@ -76,7 +93,12 @@ async def update_project(pk: int, request: UpdateProjectRequest) -> Record:
 )
 async def delete_project(pk: int) -> None:
     with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
-        await delete_one_project(pk=pk)
+        await get_one_project(pk=pk)
+
+    await database.execute(delete(Task).where(Task.project_id == pk))
+    await database.execute(
+        delete(Project).where(Project.id == pk).returning(Project.id)
+    )
 
 
 @router.post(
@@ -85,12 +107,14 @@ async def delete_project(pk: int) -> None:
     response_model=ProjectResponse,
     status_code=status.HTTP_200_OK,
 )
-async def archive_project(pk: int) -> Record:
+async def archive_project(pk: int) -> dict:
     with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
         project: Record = await update_one_project(
             pk=pk, data={'archived_at': func.now()}
         )
-    return project
+    response = dict(project)
+    response['tasks'] = []
+    return response
 
 
 @router.post(
@@ -99,7 +123,9 @@ async def archive_project(pk: int) -> Record:
     response_model=ProjectResponse,
     status_code=status.HTTP_200_OK,
 )
-async def restore_project(pk: int) -> Record:
+async def restore_project(pk: int) -> dict:
     with funcy.reraise(DoesNotExist, NotFound(f'project with pk={pk} not found')):
         project: Record = await update_one_project(pk=pk, data={'archived_at': None})
-    return project
+    response = dict(project)
+    response['tasks'] = []
+    return response

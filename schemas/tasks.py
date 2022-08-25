@@ -11,8 +11,9 @@ class TaskBase(BaseModel):
     decisive: bool | None
     description: str | None
     due: datetime | None
-    title: str | None
+    project_id: int | None
     space: int | None
+    title: str | None
 
 
 class TaskResponse(TaskBase):

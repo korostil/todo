@@ -8,6 +8,7 @@ from app.database import database
 from models import Task
 from schemas.tasks import CreateTaskRequest, TaskResponse, UpdateTaskRequest
 from services.exceptions import DoesNotExist
+from services.projects import get_one_project
 from services.tasks import (
     create_one_task,
     delete_one_task,
@@ -39,6 +40,10 @@ async def read_task(pk: int) -> Record:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_task(request: CreateTaskRequest) -> Record:
+    with funcy.reraise(
+        DoesNotExist, NotFound(f'project with pk={request.project_id} not found')
+    ):
+        await get_one_project(pk=request.project_id)
     task: Record = await create_one_task(data=request.dict())
     return task
 
@@ -46,6 +51,12 @@ async def create_task(request: CreateTaskRequest) -> Record:
 @router.put('/tasks/{pk}/', tags=['tasks'], response_model=TaskResponse)
 async def update_task(pk: int, request: UpdateTaskRequest) -> Record:
     update_data = request.dict(exclude_unset=True)
+    project_id = request.project_id
+
+    with funcy.reraise(
+        DoesNotExist, NotFound(f'project with pk={project_id} not found')
+    ):
+        await get_one_project(pk=project_id)
 
     with funcy.reraise(DoesNotExist, NotFound(f'task with pk={pk} not found')):
         task: Record = await update_one_task(pk=pk, data=update_data)

@@ -8,10 +8,12 @@
   - [ ] tags
 - [ ] Move to poetry
 - [ ] Yandex.Cloud
-- [ ] Tasks archive
+- [ ] Archived
   - [ ] search
   - [ ] filter by date
   - [ ] filter by label
+  - [ ] complete tasks if project archived?
+  - [ ] complete projects if goal archived?
 - [ ] Recurrent task
 - [ ] Subtasks
 - [ ] Comments

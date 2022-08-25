@@ -6,7 +6,7 @@ from main import app
 from models import Task
 from tests.api.helpers import serialize_error_response
 from tests.api.private.tasks.helpers import serialize_task_response
-from tests.factories import TaskDataFactory, TaskFactory
+from tests.factories import ProjectFactory, TaskDataFactory, TaskFactory
 
 
 class TestUpdateTask:
@@ -226,4 +226,37 @@ class TestUpdateTask:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'decisive none is not an allowed value'
+        )
+
+    async def test_link_project(self, client):
+        await self._setup()
+        project = await ProjectFactory.create()
+        project_data = {'project_id': project.id}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['project_id'] == project.id
+
+    async def test_project_not_found(self, client):
+        await self._setup()
+        pk = 100500
+        project_data = {'project_id': pk}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == serialize_error_response(
+            'not_found', f'project with pk={pk} not found'
+        )
+
+    async def test_invalid_project(self, client):
+        await self._setup()
+        project_data = {'project_id': 'invalid'}
+
+        response = await client.put(self.url, json=project_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'project_id value is not a valid integer'
         )

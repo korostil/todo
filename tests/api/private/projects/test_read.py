@@ -1,10 +1,11 @@
+import funcy
 import pytest
 from fastapi import status
 
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.projects.helpers import serialize_project_response
-from tests.factories import ProjectFactory
+from tests.factories import ProjectFactory, TaskFactory
 
 pytestmark = [pytest.mark.asyncio]
 
@@ -42,3 +43,12 @@ class TestReadProject:
         assert response.json() == serialize_error_response(
             'forbidden', 'Not authenticated'
         )
+
+    async def test_related_tasks(self, client):
+        await self._setup()
+        tasks = await TaskFactory.create_batch(size=2, project_id=self.project.id)
+
+        response = await client.get(self.url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()['data']['tasks'] == funcy.lpluck_attr('id', tasks)

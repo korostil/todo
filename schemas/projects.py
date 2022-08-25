@@ -19,6 +19,7 @@ class ProjectResponse(ProjectBase):
     archived_at: datetime | None
     created_at: datetime
     id: int
+    tasks: list[int]
 
     @root_validator
     def validate_project(cls, values: dict) -> dict:

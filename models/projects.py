@@ -18,6 +18,7 @@ class Project(BaseDBModel):
     goal_id = Column(Integer, ForeignKey('goal.id'))
     goal = relationship('Goal', back_populates='projects')
     space = Column(Integer, nullable=False)
+    tasks = relationship('Task', back_populates='project')
     title = Column(String(256), nullable=False)
 
     def __repr__(self) -> str:

@@ -4,9 +4,9 @@ from sqlalchemy import select
 
 from app.database import database
 from main import app
-from models import Project
+from models import Project, Task
 from tests.api.helpers import serialize_error_response
-from tests.factories import ProjectFactory
+from tests.factories import ProjectFactory, TaskFactory
 
 pytestmark = [pytest.mark.asyncio]
 
@@ -46,3 +46,13 @@ class TestDeleteProject:
         assert response.json() == serialize_error_response(
             'forbidden', 'Not authenticated'
         )
+
+    async def test_linked_tasks(self, client):
+        await self._setup()
+        await TaskFactory.create_batch(size=2, project_id=self.project.id)
+
+        response = await client.delete(self.url)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        query = select(Task).where(Task.project_id == self.project.id)
+        assert await database.fetch_one(query) is None

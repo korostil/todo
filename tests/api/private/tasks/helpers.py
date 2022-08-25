@@ -13,8 +13,9 @@ def serialize_task(task: Task) -> dict:
         'due': task.due.isoformat() if task.due else None,
         'id': task.id,
         'is_completed': task.completed_at is not None,
-        'title': task.title,
+        'project_id': task.project_id,
         'space': task.space,
+        'title': task.title,
     }
 
 

@@ -13,6 +13,7 @@ def serialize_project(project: Project) -> dict:
         'goal_id': project.goal_id,
         'id': project.id,
         'is_archived': project.archived_at is not None,
+        'tasks': project.tasks or [],
         'title': project.title,
         'space': project.space,
     }

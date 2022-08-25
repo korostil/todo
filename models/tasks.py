@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy.orm import relationship
 
 from app.database import BaseDBModel
 
@@ -15,6 +16,8 @@ class Task(BaseDBModel):
     decisive = Column(Boolean, nullable=False)
     description = Column(String(256), nullable=False)
     due = Column(DateTime)
+    project_id = Column(Integer, ForeignKey('project.id'))
+    project = relationship('Project', back_populates='tasks')
     space = Column(Integer, nullable=False)
     title = Column(String(256), nullable=False)
 
