@@ -107,7 +107,9 @@ class TestCreateTag:
         )
 
     @pytest.mark.parametrize(
-        'color', ['RRRRRR', 'FFF'], ids=['out_of_range', 'too_short']
+        'color',
+        ['#RRRRRR', '#FFF', 'FFFFFF'],
+        ids=['out_of_range', 'too_short', 'not_starts_with_hash'],
     )
     async def test_invalid_color(self, client, color):
         await self._setup()
@@ -117,7 +119,7 @@ class TestCreateTag:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
-            'bad_request', 'color string does not match regex "[a-fA-F0-9]{6}"'
+            'bad_request', 'color string does not match regex "#[a-fA-F0-9]{6}"'
         )
 
     async def test_null_color(self, client):

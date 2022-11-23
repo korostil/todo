@@ -10,7 +10,7 @@ __all__ = ('ProjectFactory', 'ProjectDataFactory')
 
 
 class ProjectDataFactory(factory.DictFactory):
-    color = 'FED951'
+    color = '#FED951'
     description = factory.Faker('sentence')
     goal_id = None
     title = factory.Faker('slug')

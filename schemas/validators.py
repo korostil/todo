@@ -34,4 +34,4 @@ def validate_none(value: Any) -> Any:
     return value
 
 
-HEX_COLOR_REGEX = '[a-fA-F0-9]{6}'
+HEX_COLOR_REGEX = '#[a-fA-F0-9]{6}'

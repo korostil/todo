@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from app.database import BaseDBModel
 
@@ -12,7 +12,7 @@ class Project(BaseDBModel):
     id = Column(Integer, primary_key=True)
 
     archived_at = Column(DateTime)
-    color = Column(String(6))  # hexadecimal
+    color = Column(String(7))  # hexadecimal
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     description = Column(String(256), nullable=False)
     goal_id = Column(Integer, ForeignKey('goal.id'))
@@ -23,3 +23,8 @@ class Project(BaseDBModel):
 
     def __repr__(self) -> str:
         return f'Project: {self.title}'
+
+    @validates('color')
+    def validate_color(self, key: str, value: str) -> str:
+        assert value.startswith('#') is True
+        return value
