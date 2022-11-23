@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, root_validator
 
 from schemas.validators import HEX_COLOR_REGEX, validate_none, validate_space
+from utils.validators import reusable_validator
 
 __all__ = ('ProjectResponse', 'CreateProjectRequest', 'UpdateProjectRequest')
 
@@ -33,7 +34,7 @@ class CreateProjectRequest(ProjectBase):
     title: str = Field(min_length=1, max_length=255)
     space: int
 
-    _validate_space = validator('space', allow_reuse=True)(validate_space)
+    _validate_space = reusable_validator('space')(validate_space)
 
 
 class UpdateProjectRequest(ProjectBase):
@@ -41,6 +42,6 @@ class UpdateProjectRequest(ProjectBase):
     description: str | None = Field(None, min_length=1, max_length=255)
     title: str | None = Field(None, min_length=1, max_length=255)
 
-    _validate_description = validator('description', allow_reuse=True)(validate_none)
-    _validate_title = validator('title', allow_reuse=True)(validate_none)
-    _validate_space = validator('space', allow_reuse=True)(validate_space)
+    _validate_description = reusable_validator('description')(validate_none)
+    _validate_title = reusable_validator('title')(validate_none)
+    _validate_space = reusable_validator('space')(validate_space)

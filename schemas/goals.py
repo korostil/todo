@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 from schemas.validators import validate_none, validate_status
+from utils.validators import reusable_validator
 
 __all__ = ('GoalResponse', 'CreateGoalRequest', 'UpdateGoalRequest')
 
@@ -27,12 +28,12 @@ class CreateGoalRequest(GoalBase):
     week: int | None = Field(None, ge=1, le=52)
     year: int | None = Field(None, ge=2022)
 
-    _validate_status = validator('status', allow_reuse=True)(validate_status)
+    _validate_status = reusable_validator('status')(validate_status)
 
 
 class UpdateGoalRequest(GoalBase):
     status: int | None  # type: ignore
     title: str | None = Field(None, min_length=1, max_length=255)
 
-    _validate_status = validator('status', allow_reuse=True)(validate_status)
-    _validate_title = validator('title', allow_reuse=True)(validate_none)
+    _validate_status = reusable_validator('status')(validate_status)
+    _validate_title = reusable_validator('title')(validate_none)

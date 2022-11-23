@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, root_validator
 
 from schemas.validators import validate_datetime, validate_none, validate_space
+from utils.validators import reusable_validator
 
 __all__ = ('TaskResponse', 'CreateTaskRequest', 'UpdateTaskRequest')
 
@@ -34,16 +35,16 @@ class CreateTaskRequest(TaskBase):
     title: str = Field(min_length=1, max_length=255)
     space: int
 
-    _validate_due = validator('due', pre=True, allow_reuse=True)(validate_datetime)
-    _validate_space = validator('space', allow_reuse=True)(validate_space)
+    _validate_due = reusable_validator('due', pre=True)(validate_datetime)
+    _validate_space = reusable_validator('space')(validate_space)
 
 
 class UpdateTaskRequest(TaskBase):
     description: str | None = Field(None, min_length=1, max_length=255)
     title: str | None = Field(None, min_length=1, max_length=255)
 
-    _validate_decisive = validator('decisive', allow_reuse=True)(validate_none)
-    _validate_description = validator('description', allow_reuse=True)(validate_none)
-    _validate_due = validator('due', pre=True, allow_reuse=True)(validate_datetime)
-    _validate_title = validator('title', allow_reuse=True)(validate_none)
-    _validate_space = validator('space', allow_reuse=True)(validate_space)
+    _validate_decisive = reusable_validator('decisive')(validate_none)
+    _validate_description = reusable_validator('description')(validate_none)
+    _validate_due = reusable_validator('due', pre=True)(validate_datetime)
+    _validate_title = reusable_validator('title')(validate_none)
+    _validate_space = reusable_validator('space')(validate_space)

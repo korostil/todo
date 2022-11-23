@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 from schemas.validators import validate_none
+from utils.validators import reusable_validator
 
 __all__ = ('CommentResponse', 'CreateCommentRequest', 'UpdateCommentRequest')
 
@@ -23,4 +24,4 @@ class CreateCommentRequest(CommentBase):
 class UpdateCommentRequest(CommentBase):
     text: str | None = Field(None, min_length=1, max_length=1023)
 
-    _validate_text = validator('text', allow_reuse=True)(validate_none)
+    _validate_text = reusable_validator('text')(validate_none)

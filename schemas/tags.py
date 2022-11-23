@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 from schemas.validators import HEX_COLOR_REGEX, validate_none
+from utils.validators import reusable_validator
 
 __all__ = ('TagResponse', 'CreateTagRequest', 'UpdateTagRequest')
 
@@ -23,4 +24,4 @@ class UpdateTagRequest(TagBase):
     color: str | None = Field(None, regex=HEX_COLOR_REGEX)
     title: str | None = Field(None, min_length=1, max_length=31)
 
-    _validate_title = validator('title', allow_reuse=True)(validate_none)
+    _validate_title = reusable_validator('title')(validate_none)
