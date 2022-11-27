@@ -1,12 +1,17 @@
 import funcy
 from databases.interfaces import Record
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import func, select
 
 from api.exceptions import NotFound
 from app.database import database
 from models import Task
-from schemas.tasks import CreateTaskRequest, TaskResponse, UpdateTaskRequest
+from schemas.tasks import (
+    CreateTaskRequest,
+    RetrieveTasksListRequest,
+    TaskResponse,
+    UpdateTaskRequest,
+)
 from services.exceptions import DoesNotExist
 from services.projects import get_one_project
 from services.tasks import (
@@ -20,8 +25,16 @@ router = APIRouter()
 
 
 @router.get('/tasks/', tags=['tasks'], response_model=list[TaskResponse])
-async def read_tasks_list() -> list[Record]:
+async def read_tasks_list(
+    request: RetrieveTasksListRequest = Depends(),
+) -> list[Record]:
     query = select(Task)
+    if request.completed is not None:
+        query = query.filter(
+            Task.completed_at.isnot(None)
+            if request.completed
+            else Task.completed_at.is_(None)
+        )
     tasks = await database.fetch_all(query)
     return tasks
 

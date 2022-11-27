@@ -2,6 +2,7 @@ import click
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException, RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 from api import router
 from app.database import database
@@ -11,6 +12,14 @@ from app.settings import settings
 app = FastAPI(title=settings.app_name, debug=settings.debug)
 app.settings = settings  # type: ignore
 app.include_router(router, prefix='/api')
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.add_exception_handler(RequestValidationError, validations_handler)
 app.add_exception_handler(HTTPException, exceptions_handler)

@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 
 from main import app
@@ -21,10 +22,22 @@ class TestReadTaskList:
 
     async def test_empty_list(self, client):
         await self._setup()
+
         response = await client.get(self.url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([])
+
+    @pytest.mark.parametrize('completed', [False, True])
+    async def test_filter_completed(self, client, completed):
+        await self._setup()
+        await TaskFactory.create(completed=not completed)
+        task = await TaskFactory.create(completed=completed)
+
+        response = await client.get(self.url, params={'completed': completed})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])
 
     async def test_not_authorized(self, anonymous_client):
         await self._setup()

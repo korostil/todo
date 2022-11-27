@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from fastapi import Query
 from pydantic import BaseModel, Field, root_validator
 
 from schemas.validators import validate_datetime, validate_none, validate_space
@@ -48,3 +49,7 @@ class UpdateTaskRequest(TaskBase):
     _validate_due = reusable_validator('due', pre=True)(validate_datetime)
     _validate_title = reusable_validator('title')(validate_none)
     _validate_space = reusable_validator('space')(validate_space)
+
+
+class RetrieveTasksListRequest(BaseModel):
+    completed: bool | None = Query(None)
