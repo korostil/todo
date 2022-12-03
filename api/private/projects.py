@@ -15,7 +15,9 @@ router = APIRouter()
 
 
 @router.get('/projects/', tags=['projects'], response_model=list[ProjectResponse])
-async def read_projects_list(archived: bool | None = Query(None)) -> list[dict]:
+async def read_projects_list(
+    archived: bool | None = Query(None), search: str | None = Query(None)
+) -> list[dict]:
     query = select(Project)
 
     if archived is not None:
@@ -23,6 +25,11 @@ async def read_projects_list(archived: bool | None = Query(None)) -> list[dict]:
             Project.archived_at.isnot(None)
             if archived
             else Project.archived_at.is_(None)
+        )
+
+    if search:
+        query = query.filter(
+            Project.title.ilike(search) | Project.description.ilike(search)
         )
 
     projects = await database.fetch_all(query)
