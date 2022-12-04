@@ -1,6 +1,7 @@
 import funcy
+from databases.interfaces import Record
 from fastapi import APIRouter, status
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 
 from api.exceptions import NotFound
 from app.database import database
@@ -76,3 +77,31 @@ async def delete_goal(pk: int) -> None:
 
     await database.execute(delete(Project).where(Project.goal_id == pk))
     await database.execute(delete(Goal).where(Goal.id == pk).returning(Goal.id))
+
+
+@router.post(
+    '/goals/{pk}/archive/',
+    tags=['goals'],
+    response_model=GoalResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def archive_goal(pk: int) -> dict:
+    with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={pk} not found')):
+        goal: Record = await update_one_goal(pk=pk, data={'archived_at': func.now()})
+    response = dict(goal)
+    response['projects'] = []
+    return response
+
+
+@router.post(
+    '/goals/{pk}/restore/',
+    tags=['projects'],
+    response_model=GoalResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def restore_goal(pk: int) -> dict:
+    with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={pk} not found')):
+        goal: Record = await update_one_goal(pk=pk, data={'archived_at': None})
+    response = dict(goal)
+    response['projects'] = []
+    return response

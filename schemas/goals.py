@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 
 from schemas.validators import validate_none, validate_status
 from utils.validators import reusable_validator
@@ -17,9 +17,15 @@ class GoalBase(BaseModel):
 
 
 class GoalResponse(GoalBase):
+    archived_at: datetime | None
     created_at: datetime
     id: int
     projects: list[int]
+
+    @root_validator
+    def validate_goal(cls, values: dict) -> dict:
+        values['is_archived'] = values.get('archived_at') is not None
+        return values
 
 
 class CreateGoalRequest(GoalBase):

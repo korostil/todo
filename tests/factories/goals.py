@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import factory
 
 from models import Goal, Status
@@ -15,7 +17,11 @@ class GoalDataFactory(factory.DictFactory):
 
 
 class GoalFactory(AsyncFactory, GoalDataFactory):
+    archived_at = None
     created_at = factory.Faker('date_time')
 
     class Meta:
         model = Goal
+
+    class Params:
+        archived = factory.Trait(archived_at=datetime.now() - timedelta(minutes=1))
