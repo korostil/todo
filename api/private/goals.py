@@ -1,6 +1,6 @@
 import funcy
 from databases.interfaces import Record
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Query, status
 from sqlalchemy import delete, func, select
 
 from api.exceptions import NotFound
@@ -14,8 +14,19 @@ router = APIRouter()
 
 
 @router.get('/goals/', tags=['goals'], response_model=list[GoalResponse])
-async def read_goals_list() -> list[dict]:
+async def read_goals_list(
+    archived: bool | None = Query(None), search: str | None = Query(None)
+) -> list[dict]:
     query = select(Goal)
+
+    if archived is not None:
+        query = query.filter(
+            Goal.archived_at.isnot(None) if archived else Goal.archived_at.is_(None)
+        )
+
+    if search:
+        query = query.filter(Goal.title.ilike(search))
+
     goals = await database.fetch_all(query)
 
     response = []

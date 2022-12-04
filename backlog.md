@@ -1,4 +1,6 @@
 # backlog
+- [ ] Remove week field from Goal model
+
 - [ ] Optimize relationship queries (ex.: goal-projects)
 - [ ] Project description
 - [ ] Speed up tests

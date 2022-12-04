@@ -35,3 +35,34 @@ class TestReadGoalList:
         assert response.json() == serialize_error_response(
             'forbidden', 'Not authenticated'
         )
+
+    async def test_search_by_title(self, client):
+        await self._setup()
+        title = 'some title'
+        goal = await GoalFactory.create(title=title)
+        await GoalFactory.create()
+
+        response = await client.get(self.url, params={'search': title})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_goal_response([goal])
+
+    async def test_filter_archived(self, client):
+        await self._setup()
+        archived_goal = await GoalFactory.create(archived=True)
+        await GoalFactory.create()
+
+        response = await client.get(self.url, params={'archived': True})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_goal_response([archived_goal])
+
+    async def test_filter_active(self, client):
+        await self._setup()
+        await GoalFactory.create(archived=True)
+        active_goal = await GoalFactory.create()
+
+        response = await client.get(self.url, params={'archived': False})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_goal_response([active_goal])
