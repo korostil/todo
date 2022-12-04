@@ -24,6 +24,7 @@ class GoalResponse(GoalBase):
 
 class CreateGoalRequest(GoalBase):
     month: int | None = Field(None, ge=1, le=12)
+    status: int | None  # type: ignore
     title: str = Field(min_length=1, max_length=255)
     week: int | None = Field(None, ge=1, le=52)
     year: int | None = Field(None, ge=2022)
@@ -35,5 +36,6 @@ class UpdateGoalRequest(GoalBase):
     status: int | None  # type: ignore
     title: str | None = Field(None, min_length=1, max_length=255)
 
-    _validate_status = reusable_validator('status')(validate_status)
+    _validate_status_none = reusable_validator('status')(validate_none)
+    _validate_status_value = reusable_validator('status')(validate_status)
     _validate_title = reusable_validator('title')(validate_none)

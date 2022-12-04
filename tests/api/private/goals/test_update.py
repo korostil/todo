@@ -153,7 +153,7 @@ class TestUpdateGoal:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
-            'bad_request', 'status None is not a valid Status'
+            'bad_request', 'status none is not an allowed value'
         )
 
     async def test_unavailable_status(self, client):

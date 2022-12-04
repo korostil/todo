@@ -10,8 +10,9 @@ def validate_space(value: int) -> int:
     return value
 
 
-def validate_status(value: int) -> int:
-    Status(value)
+def validate_status(value: int | None) -> int | None:
+    if value is not None:
+        Status(value)
     return value
 
 

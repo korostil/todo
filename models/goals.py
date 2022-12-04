@@ -22,7 +22,7 @@ class Goal(BaseDBModel):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     month = Column(Integer)
     projects = relationship('Project', back_populates='goal')
-    status = Column(Integer, nullable=False, default=Status.NEW)
+    status = Column(Integer, nullable=False, server_default=str(Status.NEW.value))
     title = Column(String(256), nullable=False)
     week = Column(Integer)
     year = Column(Integer)

@@ -49,7 +49,7 @@ async def read_goal(pk: int) -> dict:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_goal(request: CreateGoalRequest) -> dict:
-    goal = await create_one_goal(data=request.dict())
+    goal = await create_one_goal(data=funcy.compact(request.dict()))
     response = dict(goal)
     response['projects'] = []
     return response

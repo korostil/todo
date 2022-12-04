@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from app.database import database
 from main import app
-from models import Goal
+from models import Goal, Status
 from tests.api.helpers import serialize_error_response
 from tests.api.private.goals.helpers import serialize_goal_response
 from tests.factories import GoalDataFactory
@@ -139,30 +139,17 @@ class TestCreateGoal:
             'bad_request', 'status value is not a valid integer'
         )
 
-    async def test_null_space(self, client):
+    async def test_default_status(self, client):
         await self._setup()
         project_data = GoalDataFactory.create(status=None)
-
-        response = await client.post(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status none is not an allowed value'
-        )
-
-    async def test_space_required(self, client):
-        await self._setup()
-        project_data = GoalDataFactory.create()
         del project_data['status']
 
         response = await client.post(self.url, json=project_data)
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status field required'
-        )
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.json()['data']['status'] == Status.NEW.value
 
-    async def test_unavailable_space(self, client):
+    async def test_unavailable_status(self, client):
         await self._setup()
         project_data = GoalDataFactory.create(status=1000)
 
