@@ -25,7 +25,7 @@ async def read_goals_list(
         )
 
     if search:
-        query = query.filter(Goal.title.ilike(search))
+        query = query.filter(Goal.title.ilike(f'%{search}%'))
 
     goals = await database.fetch_all(query)
 

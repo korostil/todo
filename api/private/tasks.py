@@ -38,9 +38,8 @@ async def read_tasks_list(
         )
 
     if request.search:
-        query = query.filter(
-            Task.title.ilike(request.search) | Task.description.ilike(request.search)
-        )
+        clause = f'%{request.search}%'
+        query = query.filter(Task.title.ilike(clause) | Task.description.ilike(clause))
 
     tasks = await database.fetch_all(query)
 

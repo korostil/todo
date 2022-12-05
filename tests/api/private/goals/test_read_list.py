@@ -38,11 +38,10 @@ class TestReadGoalList:
 
     async def test_search_by_title(self, client):
         await self._setup()
-        title = 'some title'
-        goal = await GoalFactory.create(title=title)
+        goal = await GoalFactory.create(title='some TitLe')
         await GoalFactory.create()
 
-        response = await client.get(self.url, params={'search': title})
+        response = await client.get(self.url, params={'search': 'title'})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_goal_response([goal])

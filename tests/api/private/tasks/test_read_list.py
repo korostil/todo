@@ -51,22 +51,20 @@ class TestReadTaskList:
 
     async def test_search_by_title(self, client):
         await self._setup()
-        title = 'some title'
-        project = await TaskFactory.create(title=title)
+        project = await TaskFactory.create(title='some TitLe')
         await TaskFactory.create()
 
-        response = await client.get(self.url, params={'search': title})
+        response = await client.get(self.url, params={'search': 'title'})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([project])
 
     async def test_search_by_description(self, client):
         await self._setup()
-        description = 'some description'
-        project = await TaskFactory.create(description=description)
+        project = await TaskFactory.create(description='some DescriPtion')
         await TaskFactory.create()
 
-        response = await client.get(self.url, params={'search': description})
+        response = await client.get(self.url, params={'search': 'description'})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([project])

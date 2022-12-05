@@ -28,8 +28,9 @@ async def read_projects_list(
         )
 
     if search:
+        clause = f'%{search}%'
         query = query.filter(
-            Project.title.ilike(search) | Project.description.ilike(search)
+            Project.title.ilike(clause) | Project.description.ilike(clause)
         )
 
     projects = await database.fetch_all(query)

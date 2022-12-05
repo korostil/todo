@@ -72,22 +72,20 @@ class TestReadProjectList:
 
     async def test_search_by_title(self, client):
         await self._setup()
-        title = 'some title'
-        project = await ProjectFactory.create(title=title)
+        project = await ProjectFactory.create(title='some TitLe')
         await ProjectFactory.create()
 
-        response = await client.get(self.url, params={'search': title})
+        response = await client.get(self.url, params={'search': 'title'})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_project_response([project])
 
     async def test_search_by_description(self, client):
         await self._setup()
-        description = 'some description'
-        project = await ProjectFactory.create(description=description)
+        project = await ProjectFactory.create(description='some DescriPtion')
         await ProjectFactory.create()
 
-        response = await client.get(self.url, params={'search': description})
+        response = await client.get(self.url, params={'search': 'description'})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_project_response([project])
