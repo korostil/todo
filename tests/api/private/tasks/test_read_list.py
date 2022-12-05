@@ -48,3 +48,25 @@ class TestReadTaskList:
         assert response.json() == serialize_error_response(
             'forbidden', 'Not authenticated'
         )
+
+    async def test_search_by_title(self, client):
+        await self._setup()
+        title = 'some title'
+        project = await TaskFactory.create(title=title)
+        await TaskFactory.create()
+
+        response = await client.get(self.url, params={'search': title})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([project])
+
+    async def test_search_by_description(self, client):
+        await self._setup()
+        description = 'some description'
+        project = await TaskFactory.create(description=description)
+        await TaskFactory.create()
+
+        response = await client.get(self.url, params={'search': description})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([project])

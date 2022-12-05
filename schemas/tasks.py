@@ -6,7 +6,12 @@ from pydantic import BaseModel, Field, root_validator
 from schemas.validators import validate_datetime, validate_none, validate_space
 from utils.validators import reusable_validator
 
-__all__ = ('TaskResponse', 'CreateTaskRequest', 'UpdateTaskRequest')
+__all__ = (
+    'TaskResponse',
+    'CreateTaskRequest',
+    'UpdateTaskRequest',
+    'RetrieveTasksListRequest',
+)
 
 
 class TaskBase(BaseModel):
@@ -53,3 +58,4 @@ class UpdateTaskRequest(TaskBase):
 
 class RetrieveTasksListRequest(BaseModel):
     completed: bool | None = Query(None)
+    search: str | None = Query(None)

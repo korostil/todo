@@ -29,13 +29,21 @@ async def read_tasks_list(
     request: RetrieveTasksListRequest = Depends(),
 ) -> list[Record]:
     query = select(Task)
+
     if request.completed is not None:
         query = query.filter(
             Task.completed_at.isnot(None)
             if request.completed
             else Task.completed_at.is_(None)
         )
+
+    if request.search:
+        query = query.filter(
+            Task.title.ilike(request.search) | Task.description.ilike(request.search)
+        )
+
     tasks = await database.fetch_all(query)
+
     return tasks
 
 
