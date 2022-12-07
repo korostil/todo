@@ -1,3 +1,5 @@
+from datetime import date
+
 import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, Depends, status
@@ -40,6 +42,23 @@ async def read_tasks_list(
     if request.search:
         clause = f'%{request.search}%'
         query = query.filter(Task.title.ilike(clause) | Task.description.ilike(clause))
+
+    tasks = await database.fetch_all(query)
+
+    return tasks
+
+
+@router.get(
+    '/tasks/today/',
+    tags=['tasks'],
+    response_model=list[TaskResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def today_tasks() -> list[Record]:
+    query = select(Task).filter(
+        (func.DATE(Task.created_at) == date.today())
+        | (func.DATE(Task.completed_at) == date.today())
+    )
 
     tasks = await database.fetch_all(query)
 
