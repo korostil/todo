@@ -57,5 +57,6 @@ class UpdateTaskRequest(TaskBase):
 
 
 class RetrieveTasksListRequest(BaseModel):
+    decisive: bool | None = Query(None)
     completed: bool | None = Query(None)
     search: str | None = Query(None)

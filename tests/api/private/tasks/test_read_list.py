@@ -39,6 +39,17 @@ class TestReadTaskList:
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([task])
 
+    @pytest.mark.parametrize('decisive', [False, True])
+    async def test_filter_decisive(self, client, decisive):
+        await self._setup()
+        await TaskFactory.create(decisive=not decisive)
+        task = await TaskFactory.create(decisive=decisive)
+
+        response = await client.get(self.url, params={'decisive': decisive})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])
+
     async def test_not_authorized(self, anonymous_client):
         await self._setup()
 
