@@ -3,7 +3,7 @@ from datetime import date
 import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, Depends, status
-from sqlalchemy import func, select
+from sqlalchemy import Date, cast, func, select
 
 from api.exceptions import NotFound
 from app.database import database
@@ -47,10 +47,10 @@ async def read_tasks_list(
         query = query.filter(Task.decisive == request.decisive)
 
     if request.due_from:
-        query = query.filter(Task.due >= request.due_from)
+        query = query.filter(cast(Task.due, Date) >= request.due_from)
 
     if request.due_to:
-        query = query.filter(Task.due <= request.due_to)
+        query = query.filter(cast(Task.due, Date) <= request.due_to)
 
     tasks = await database.fetch_all(query)
 

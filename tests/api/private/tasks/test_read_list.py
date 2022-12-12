@@ -94,8 +94,8 @@ class TestReadTaskList:
 
     async def test_filter_by_due_from(self, client):
         await self._setup()
-        await TaskFactory.create(due=datetime(2020, 1, 1))
-        task = await TaskFactory.create(due=datetime(2020, 1, 2))
+        await TaskFactory.create(due=datetime(2020, 1, 1, 12, 0))
+        task = await TaskFactory.create(due=datetime(2020, 1, 2, 12, 0))
 
         response = await client.get(self.url, params={'due_from': '2020-01-02'})
 
@@ -104,8 +104,8 @@ class TestReadTaskList:
 
     async def test_filter_by_due_to(self, client):
         await self._setup()
-        task = await TaskFactory.create(due=datetime(2020, 1, 1))
-        await TaskFactory.create(due=datetime(2020, 1, 2))
+        task = await TaskFactory.create(due=datetime(2020, 1, 1, 12, 0))
+        await TaskFactory.create(due=datetime(2020, 1, 2, 12, 0))
 
         response = await client.get(self.url, params={'due_to': '2020-01-01'})
 
