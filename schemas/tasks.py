@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from fastapi import Query
 from pydantic import BaseModel, Field, root_validator
@@ -58,5 +58,7 @@ class UpdateTaskRequest(TaskBase):
 
 class RetrieveTasksListRequest(BaseModel):
     decisive: bool | None = Query(None)
+    due_from: date | None = Query(None)
+    due_to: date | None = Query(None)
     completed: bool | None = Query(None)
     search: str | None = Query(None)

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from fastapi import status
 
@@ -79,3 +81,33 @@ class TestReadTaskList:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([project])
+
+    async def test_invalid_due_from(self, client):
+        await self._setup()
+
+        response = await client.get(self.url, params={'due_from': 'not a date'})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'due_from invalid date format'
+        )
+
+    async def test_filter_by_due_from(self, client):
+        await self._setup()
+        await TaskFactory.create(due=datetime(2020, 1, 1))
+        task = await TaskFactory.create(due=datetime(2020, 1, 2))
+
+        response = await client.get(self.url, params={'due_from': '2020-01-02'})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])
+
+    async def test_filter_by_due_to(self, client):
+        await self._setup()
+        task = await TaskFactory.create(due=datetime(2020, 1, 1))
+        await TaskFactory.create(due=datetime(2020, 1, 2))
+
+        response = await client.get(self.url, params={'due_to': '2020-01-01'})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])

@@ -46,6 +46,12 @@ async def read_tasks_list(
     if request.decisive is not None:
         query = query.filter(Task.decisive == request.decisive)
 
+    if request.due_from:
+        query = query.filter(Task.due >= request.due_from)
+
+    if request.due_to:
+        query = query.filter(Task.due <= request.due_to)
+
     tasks = await database.fetch_all(query)
 
     return tasks
