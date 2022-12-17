@@ -25,7 +25,7 @@ class TaskDataFactory(factory.DictFactory):
 
 
 class TaskFactory(AsyncFactory, TaskDataFactory):
-    created_at = factory.Faker('date_time')
+    created_at = datetime.now()
     completed_at = None
     due = factory.Faker('date_time')
 

@@ -3,6 +3,7 @@ from datetime import date, datetime
 from fastapi import Query
 from pydantic import BaseModel, Field, root_validator
 
+from app.settings import settings
 from schemas.validators import validate_datetime, validate_none, validate_space
 from utils.validators import reusable_validator
 
@@ -61,4 +62,8 @@ class RetrieveTasksListRequest(BaseModel):
     due_from: date | None = Query(None)
     due_to: date | None = Query(None)
     completed: bool | None = Query(None)
+    limit: int | None = Query(
+        settings.max_tasks_per_page, gt=0, le=settings.max_tasks_per_page
+    )
+    offset: int | None = Query(0, ge=0)
     search: str | None = Query(None)

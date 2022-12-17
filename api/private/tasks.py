@@ -30,7 +30,7 @@ router = APIRouter()
 async def read_tasks_list(
     request: RetrieveTasksListRequest = Depends(),
 ) -> list[Record]:
-    query = select(Task)
+    query = select(Task).order_by(Task.created_at.desc(), Task.id.desc())
 
     if request.completed is not None:
         query = query.filter(
@@ -51,6 +51,12 @@ async def read_tasks_list(
 
     if request.due_to:
         query = query.filter(cast(Task.due, Date) <= request.due_to)
+
+    if request.limit:
+        query = query.limit(request.limit)
+
+    if request.offset:
+        query = query.offset(request.offset)
 
     tasks = await database.fetch_all(query)
 

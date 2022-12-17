@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     # Logging
     log_level: str = 'info'
 
+    # limits
+    max_tasks_per_page = 50
+
     @property
     def database_url(self) -> str:
         user_creds = f'{self.db_user}:{self.db_password}'

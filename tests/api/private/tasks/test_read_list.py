@@ -20,7 +20,7 @@ class TestReadTaskList:
         response = await client.get(self.url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == serialize_task_response(tasks)
+        assert response.json() == serialize_task_response(tasks[::-1])
 
     async def test_empty_list(self, client):
         await self._setup()
@@ -108,6 +108,35 @@ class TestReadTaskList:
         await TaskFactory.create(due=datetime(2020, 1, 2, 12, 0))
 
         response = await client.get(self.url, params={'due_to': '2020-01-01'})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])
+
+    @pytest.mark.parametrize(
+        'param,value,error_msg',
+        [
+            ('limit', 51, 'limit ensure this value is less than or equal to 50'),
+            ('limit', 0, 'limit ensure this value is greater than 0'),
+            ('limit', 'a', 'limit value is not a valid integer'),
+            ('offset', -1, 'offset ensure this value is greater than or equal to 0'),
+            ('offset', 'a', 'offset value is not a valid integer'),
+        ],
+        ids=['max-limit', 'min-limit', 'integer-limit', 'min-offset', 'integer-offset'],
+    )
+    async def test_invalid_limit_offset(self, client, param, value, error_msg):
+        await self._setup()
+
+        response = await client.get(self.url, params={param: value})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response('bad_request', error_msg)
+
+    async def test_pagination(self, client):
+        await self._setup()
+        task = await TaskFactory.create()
+        await TaskFactory.create()
+
+        response = await client.get(self.url, params={'limit': 1, 'offset': 1})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([task])
