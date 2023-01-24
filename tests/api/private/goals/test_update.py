@@ -101,17 +101,6 @@ class TestUpdateGoal:
             'bad_request', 'title str type expected'
         )
 
-    async def test_invalid_week(self, client):
-        await self._setup()
-        goal_data = {'week': 'invalid'}
-
-        response = await client.put(self.url, json=goal_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'week value is not a valid integer'
-        )
-
     async def test_invalid_month(self, client):
         await self._setup()
         goal_data = {'month': 'invalid'}

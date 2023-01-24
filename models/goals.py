@@ -25,7 +25,6 @@ class Goal(BaseDBModel):
     projects = relationship('Project', back_populates='goal')
     status = Column(Integer, nullable=False, server_default=str(Status.NEW.value))
     title = Column(String(256), nullable=False)
-    week = Column(Integer)
     year = Column(Integer)
 
     def __repr__(self) -> str:

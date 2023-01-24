@@ -12,7 +12,6 @@ class GoalBase(BaseModel):
     month: int | None
     status: int
     title: str | None
-    week: int | None
     year: int | None
 
 
@@ -32,7 +31,6 @@ class CreateGoalRequest(GoalBase):
     month: int | None = Field(None, ge=1, le=12)
     status: int | None  # type: ignore
     title: str = Field(min_length=1, max_length=255)
-    week: int | None = Field(None, ge=1, le=52)
     year: int | None = Field(None, ge=2022)
 
     _validate_status = reusable_validator('status')(validate_status)

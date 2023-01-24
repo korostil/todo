@@ -12,7 +12,6 @@ class GoalDataFactory(factory.DictFactory):
     month = None
     status = Status.NEW.value
     title = factory.Faker('slug')
-    week = None
     year = None
 
 
