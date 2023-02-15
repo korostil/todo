@@ -43,6 +43,9 @@ async def read_tasks_list(
         clause = f'%{request.search}%'
         query = query.filter(Task.title.ilike(clause) | Task.description.ilike(clause))
 
+    if request.project_id is not None:
+        query = query.filter(Task.project_id == request.project_id)
+
     if request.decisive is not None:
         query = query.filter(Task.decisive == request.decisive)
 

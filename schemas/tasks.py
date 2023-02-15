@@ -66,4 +66,5 @@ class RetrieveTasksListRequest(BaseModel):
         settings.max_tasks_per_page, gt=0, le=settings.max_tasks_per_page
     )
     offset: int | None = Query(0, ge=0)
+    project_id: int | None = Query(None)
     search: str | None = Query(None)
