@@ -64,23 +64,23 @@ class TestReadTaskList:
 
     async def test_search_by_title(self, client):
         await self._setup()
-        project = await TaskFactory.create(title='some TitLe')
+        task = await TaskFactory.create(title='some TitLe')
         await TaskFactory.create()
 
         response = await client.get(self.url, params={'search': 'title'})
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == serialize_task_response([project])
+        assert response.json() == serialize_task_response([task])
 
     async def test_search_by_description(self, client):
         await self._setup()
-        project = await TaskFactory.create(description='some DescriPtion')
+        task = await TaskFactory.create(description='some DescriPtion')
         await TaskFactory.create()
 
         response = await client.get(self.url, params={'search': 'description'})
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == serialize_task_response([project])
+        assert response.json() == serialize_task_response([task])
 
     async def test_invalid_due_from(self, client):
         await self._setup()
