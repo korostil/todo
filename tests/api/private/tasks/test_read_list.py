@@ -6,7 +6,7 @@ from fastapi import status
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.tasks.helpers import serialize_task_response
-from tests.factories import TaskFactory, ProjectFactory
+from tests.factories import ProjectFactory, TaskFactory
 
 
 class TestReadTaskList:
@@ -147,7 +147,9 @@ class TestReadTaskList:
         response = await client.get(self.url, params={'project_id': 'a'})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response('bad_request', 'project_id value is not a valid integer')
+        assert response.json() == serialize_error_response(
+            'bad_request', 'project_id value is not a valid integer'
+        )
 
     async def test_filter_by_project_id(self, client):
         await self._setup()

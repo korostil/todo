@@ -38,7 +38,7 @@ class TaskResponse(TaskBase):
 
 class CreateTaskRequest(TaskBase):
     decisive: bool = False
-    description: str = Field(min_length=1, max_length=255)
+    description: str | None = Field(None, min_length=1, max_length=255)
     title: str = Field(min_length=1, max_length=255)
     space: int
 
@@ -51,7 +51,6 @@ class UpdateTaskRequest(TaskBase):
     title: str | None = Field(None, min_length=1, max_length=255)
 
     _validate_decisive = reusable_validator('decisive')(validate_none)
-    _validate_description = reusable_validator('description')(validate_none)
     _validate_due = reusable_validator('due', pre=True)(validate_datetime)
     _validate_title = reusable_validator('title')(validate_none)
     _validate_space = reusable_validator('space')(validate_space)

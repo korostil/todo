@@ -14,7 +14,7 @@ class Task(BaseDBModel):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     completed_at = Column(DateTime)
     decisive = Column(Boolean, nullable=False)
-    description = Column(String(256), nullable=False)
+    description = Column(String(256))
     due = Column(DateTime)
     project_id = Column(Integer, ForeignKey('project.id'))
     project = relationship('Project', back_populates='tasks')
