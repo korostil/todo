@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, time
 from typing import Any
 
 from models.goals import Status
@@ -16,15 +16,21 @@ def validate_status(value: int | None) -> int | None:
     return value
 
 
-def validate_datetime(value: str) -> datetime | None:
+def validate_date(value: str) -> date | None:
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        raise ValueError('invalid isoformat')
+
+
+def validate_time(value: str) -> time | None:
     if not value:
         return None
 
-    if 'T' not in value:
-        value += 'T23:59:59.000000'
-
     try:
-        return datetime.fromisoformat(value)
+        return time.fromisoformat(value)
     except ValueError:
         raise ValueError('invalid isoformat')
 

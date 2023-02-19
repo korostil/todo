@@ -1,10 +1,15 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 
 from fastapi import Query
 from pydantic import BaseModel, Field, root_validator
 
 from app.settings import settings
-from schemas.validators import validate_datetime, validate_none, validate_space
+from schemas.validators import (
+    validate_date,
+    validate_none,
+    validate_space,
+    validate_time,
+)
 from utils.validators import reusable_validator
 
 __all__ = (
@@ -18,7 +23,8 @@ __all__ = (
 class TaskBase(BaseModel):
     decisive: bool | None
     description: str | None
-    due: datetime | None
+    due_date: date | None
+    due_time: time | None
     project_id: int | None
     space: int | None
     title: str | None
@@ -42,7 +48,8 @@ class CreateTaskRequest(TaskBase):
     title: str = Field(min_length=1, max_length=255)
     space: int
 
-    _validate_due = reusable_validator('due', pre=True)(validate_datetime)
+    _validate_due_date = reusable_validator('due_date', pre=True)(validate_date)
+    _validate_due_time = reusable_validator('due_time', pre=True)(validate_time)
     _validate_space = reusable_validator('space')(validate_space)
 
 
@@ -51,7 +58,8 @@ class UpdateTaskRequest(TaskBase):
     title: str | None = Field(None, min_length=1, max_length=255)
 
     _validate_decisive = reusable_validator('decisive')(validate_none)
-    _validate_due = reusable_validator('due', pre=True)(validate_datetime)
+    _validate_due_date = reusable_validator('due_date', pre=True)(validate_date)
+    _validate_due_time = reusable_validator('due_time', pre=True)(validate_time)
     _validate_title = reusable_validator('title')(validate_none)
     _validate_space = reusable_validator('space')(validate_space)
 

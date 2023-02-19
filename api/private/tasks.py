@@ -50,10 +50,10 @@ async def read_tasks_list(
         query = query.filter(Task.decisive == request.decisive)
 
     if request.due_from:
-        query = query.filter(cast(Task.due, Date) >= request.due_from)
+        query = query.filter(cast(Task.due_date, Date) >= request.due_from)
 
     if request.due_to:
-        query = query.filter(cast(Task.due, Date) <= request.due_to)
+        query = query.filter(cast(Task.due_date, Date) <= request.due_to)
 
     if request.limit:
         query = query.limit(request.limit)

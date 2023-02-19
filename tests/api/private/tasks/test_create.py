@@ -145,45 +145,77 @@ class TestCreateTask:
             'bad_request', 'description str type expected'
         )
 
-    async def test_invalid_due(self, client):
+    async def test_invalid_due_date(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create(due='2020/1/1')
+        task_data = TaskDataFactory.create(due_date='2020/1/1')
 
         response = await client.post(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
-            'bad_request', 'due invalid isoformat'
+            'bad_request', 'due_date invalid isoformat'
+        )
+
+    async def test_invalid_due_time(self, client):
+        await self._setup()
+        task_data = TaskDataFactory.create(due_time='1/1/1')
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'due_time invalid isoformat'
         )
 
     async def test_due_date(self, client):
         await self._setup()
-        task_data = TaskDataFactory.create(due='2020-01-01')
+        task_data = TaskDataFactory.create(due_date='2020-01-01', due_time=None)
 
         response = await client.post(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()['data']['due'] == '2020-01-01T23:59:59'
+        data = response.json()['data']
+        assert data['due_date'] == '2020-01-01'
+        assert data['due_time'] is None
 
-    async def test_due_datetime(self, client):
+    async def test_due_time(self, client):
         await self._setup()
-        expected_due = '2020-01-01T10:00:00'
-        task_data = TaskDataFactory.create(due=expected_due)
+        task_data = TaskDataFactory.create(due_date=None, due_time='10:00')
 
         response = await client.post(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()['data']['due'] == expected_due
+        data = response.json()['data']
+        assert data['due_date'] is None
+        assert data['due_time'] == '10:00:00'
+
+    async def test_due_date_and_time(self, client):
+        await self._setup()
+        expected_due_date = '2020-01-01'
+        expected_due_time = '10:00:00'
+        task_data = TaskDataFactory.create(
+            due_date=expected_due_date, due_time=expected_due_time
+        )
+
+        response = await client.post(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()['data']
+        assert data['due_date'] == expected_due_date
+        assert data['due_time'] == expected_due_time
 
     async def test_no_due(self, client):
         await self._setup()
         task_data = TaskDataFactory.create()
-        del task_data['due']
+        del task_data['due_date']
+        del task_data['due_time']
 
         response = await client.post(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()['data']['due'] is None
+        data = response.json()['data']
+        assert data['due_date'] is None
+        assert data['due_time'] is None
 
     async def test_invalid_space(self, client):
         await self._setup()

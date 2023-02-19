@@ -178,31 +178,47 @@ class TestUpdateTask:
 
     async def test_due_date(self, client):
         await self._setup()
-        task_data = {'due': '2020-01-01'}
+        task_data = {'due_date': '2020-01-01'}
 
         response = await client.put(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()['data']['due'] == '2020-01-01T23:59:59'
+        data = response.json()['data']
+        assert data['due_date'] == '2020-01-01'
+
+    async def test_due_time(self, client):
+        await self._setup()
+        task_data = {'due_time': '10:00'}
+
+        response = await client.put(self.url, json=task_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()['data']
+        assert data['due_time'] == '10:00:00'
 
     async def test_due_datetime(self, client):
         await self._setup()
-        expected_due = '2020-01-01T10:00:00'
-        task_data = {'due': expected_due}
+        expected_due_date = '2020-01-01'
+        expected_due_time = '10:00:00'
+        task_data = {'due_date': expected_due_date, 'due_time': expected_due_time}
 
         response = await client.put(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()['data']['due'] == expected_due
+        data = response.json()['data']
+        assert data['due_date'] == expected_due_date
+        assert data['due_time'] == expected_due_time
 
     async def test_no_due(self, client):
         await self._setup()
-        task_data = {'due': None}
+        task_data = {'due_date': None, 'due_time': None}
 
         response = await client.put(self.url, json=task_data)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()['data']['due'] is None
+        data = response.json()['data']
+        assert data['due_date'] is None
+        assert data['due_time'] is None
 
     async def test_invalid_decisive(self, client):
         await self._setup()
