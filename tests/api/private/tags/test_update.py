@@ -9,6 +9,8 @@ from tests.api.helpers import serialize_error_response
 from tests.api.private.tags.helpers import serialize_tag_response
 from tests.factories import TagDataFactory, TagFactory
 
+pytestmark = [pytest.mark.asyncio]
+
 
 class TestUpdateTag:
     async def _setup(self):

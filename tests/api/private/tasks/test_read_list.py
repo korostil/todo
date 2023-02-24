@@ -8,6 +8,8 @@ from tests.api.helpers import serialize_error_response
 from tests.api.private.tasks.helpers import serialize_task_response
 from tests.factories import ProjectFactory, TaskFactory
 
+pytestmark = [pytest.mark.asyncio]
+
 
 class TestReadTaskList:
     async def _setup(self):

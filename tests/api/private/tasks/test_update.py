@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from sqlalchemy import select
 
@@ -7,6 +8,8 @@ from models import Task
 from tests.api.helpers import serialize_error_response
 from tests.api.private.tasks.helpers import serialize_task_response
 from tests.factories import ProjectFactory, TaskDataFactory, TaskFactory
+
+pytestmark = [pytest.mark.asyncio]
 
 
 class TestUpdateTask:

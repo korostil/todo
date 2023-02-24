@@ -1,10 +1,13 @@
 import funcy
+import pytest
 from fastapi import status
 
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.goals.helpers import serialize_goal_response
 from tests.factories import GoalFactory, ProjectFactory
+
+pytestmark = [pytest.mark.asyncio]
 
 
 class TestReadGoal:

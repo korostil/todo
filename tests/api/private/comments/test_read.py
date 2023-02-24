@@ -1,9 +1,12 @@
+import pytest
 from fastapi import status
 
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.comments.helpers import serialize_comment_response
 from tests.factories import CommentFactory
+
+pytestmark = [pytest.mark.asyncio]
 
 
 class TestReadComment:

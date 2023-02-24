@@ -1,9 +1,12 @@
+import pytest
 from fastapi import status
 
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.tasks.helpers import serialize_task_response
 from tests.factories import TaskFactory
+
+pytestmark = [pytest.mark.asyncio]
 
 
 class TestReadTask:

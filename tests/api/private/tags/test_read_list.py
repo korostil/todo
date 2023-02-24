@@ -1,9 +1,12 @@
+import pytest
 from fastapi import status
 
 from main import app
 from tests.api.helpers import serialize_error_response
 from tests.api.private.tags.helpers import serialize_tag_response
 from tests.factories import TagFactory
+
+pytestmark = [pytest.mark.asyncio]
 
 
 class TestReadTagList:

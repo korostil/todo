@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from sqlalchemy import select
 
@@ -7,6 +8,8 @@ from models import Goal
 from tests.api.helpers import serialize_error_response
 from tests.api.private.goals.helpers import serialize_goal_response
 from tests.factories import GoalDataFactory, GoalFactory
+
+pytestmark = [pytest.mark.asyncio]
 
 
 class TestUpdateGoal:
