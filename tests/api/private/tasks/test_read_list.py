@@ -163,3 +163,14 @@ class TestReadTaskList:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([task])
+
+    async def test_filter_by_inbox_project(self, client):
+        await self._setup()
+        task = await TaskFactory.create()
+        project = await ProjectFactory.create()
+        await TaskFactory.create(project_id=project.id)
+
+        response = await client.get(self.url, params={'inbox': True})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])

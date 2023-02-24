@@ -69,6 +69,7 @@ class RetrieveTasksListRequest(BaseModel):
     due_from: date | None = Query(None)
     due_to: date | None = Query(None)
     completed: bool | None = Query(None)
+    inbox: bool = Query(False)
     limit: int | None = Query(
         settings.max_tasks_per_page, gt=0, le=settings.max_tasks_per_page
     )
