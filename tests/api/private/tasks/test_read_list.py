@@ -174,3 +174,13 @@ class TestReadTaskList:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([task])
+
+    async def test_completed_tasks_last(self, client):
+        await self._setup()
+        completed_task = await TaskFactory.create(completed=True)
+        task = await TaskFactory.create()
+
+        response = await client.get(self.url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task, completed_task])

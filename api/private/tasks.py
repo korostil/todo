@@ -3,7 +3,7 @@ from datetime import date
 import funcy
 from databases.interfaces import Record
 from fastapi import APIRouter, Depends, status
-from sqlalchemy import Date, cast, func, select
+from sqlalchemy import Date, cast, func, nullsfirst, select
 
 from api.exceptions import NotFound
 from app.database import database
@@ -30,7 +30,9 @@ router = APIRouter()
 async def read_tasks_list(
     request: RetrieveTasksListRequest = Depends(),
 ) -> list[Record]:
-    query = select(Task).order_by(Task.created_at.desc(), Task.id.desc())
+    query = select(Task).order_by(
+        nullsfirst(Task.completed_at.desc()), Task.created_at.desc(), Task.id.desc()
+    )
 
     if request.completed is not None:
         query = query.filter(
