@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class Space(Enum):
+class Space(IntEnum):
     WORK = 1
     PERSONAL = 2

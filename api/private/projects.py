@@ -10,13 +10,16 @@ from schemas.projects import CreateProjectRequest, ProjectResponse, UpdateProjec
 from services.exceptions import DoesNotExist
 from services.goals import get_one_goal
 from services.projects import create_one_project, get_one_project, update_one_project
+from services.spaces import Space
 
 router = APIRouter()
 
 
 @router.get('/projects/', tags=['projects'], response_model=list[ProjectResponse])
 async def read_projects_list(
-    archived: bool | None = Query(None), search: str | None = Query(None)
+    archived: bool | None = Query(None),
+    space: Space | None = Query(None),
+    search: str | None = Query(None),
 ) -> list[dict]:
     query = select(Project)
 
@@ -26,6 +29,9 @@ async def read_projects_list(
             if archived
             else Project.archived_at.is_(None)
         )
+
+    if space is not None:
+        query = query.filter(Project.space == space.value)
 
     if search:
         clause = f'%{search}%'
