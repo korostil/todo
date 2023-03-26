@@ -10,6 +10,7 @@ from schemas.validators import (
     validate_space,
     validate_time,
 )
+from services.spaces import Space
 from utils.validators import reusable_validator
 
 __all__ = (
@@ -76,3 +77,4 @@ class RetrieveTasksListRequest(BaseModel):
     offset: int | None = Query(0, ge=0)
     project_id: int | None = Query(None)
     search: str | None = Query(None)
+    space: Space | None = Query(None)

@@ -4,6 +4,7 @@ import pytest
 from fastapi import status
 
 from main import app
+from services.spaces import Space
 from tests.api.helpers import serialize_error_response
 from tests.api.private.tasks.helpers import serialize_task_response
 from tests.factories import ProjectFactory, TaskFactory
@@ -184,3 +185,44 @@ class TestReadTaskList:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_task_response([task, completed_task])
+
+    async def test_filter_personal_space(self, client):
+        await self._setup()
+        task = await TaskFactory.create(space=Space.PERSONAL.value)
+        await TaskFactory.create()
+
+        response = await client.get(self.url, params={'space': Space.PERSONAL.value})
+
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json() == serialize_task_response([task])
+
+    async def test_filter_work_space(self, client):
+        await self._setup()
+        task = await TaskFactory.create()
+        await TaskFactory.create(space=Space.PERSONAL.value)
+
+        response = await client.get(self.url, params={'space': Space.WORK.value})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == serialize_task_response([task])
+
+    async def test_invalid_space(self, client):
+        await self._setup()
+
+        response = await client.get(self.url, params={'space': 'a'})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request', 'space value is not a valid integer'
+        )
+
+    async def test_unavailable_space(self, client):
+        await self._setup()
+
+        response = await client.get(self.url, params={'space': 100500})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == serialize_error_response(
+            'bad_request',
+            'space value is not a valid enumeration member; permitted: 1, 2',
+        )
