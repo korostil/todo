@@ -1,12 +1,17 @@
 import funcy
 from databases.interfaces import Record
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import delete, func, select
 
 from api.exceptions import NotFound
 from app.database import database
 from models import Goal, Project
-from schemas.goals import CreateGoalRequest, GoalResponse, UpdateGoalRequest
+from schemas.goals import (
+    CreateGoalRequest,
+    GoalResponse,
+    RetrieveGoalListRequest,
+    UpdateGoalRequest,
+)
 from services.exceptions import DoesNotExist
 from services.goals import create_one_goal, get_one_goal, update_one_goal
 
@@ -14,18 +19,21 @@ router = APIRouter()
 
 
 @router.get('/goals/', tags=['goals'], response_model=list[GoalResponse])
-async def read_goals_list(
-    archived: bool | None = Query(None), search: str | None = Query(None)
-) -> list[dict]:
+async def read_goals_list(request: RetrieveGoalListRequest = Depends()) -> list[dict]:
     query = select(Goal)
 
-    if archived is not None:
+    if request.archived is not None:
         query = query.filter(
-            Goal.archived_at.isnot(None) if archived else Goal.archived_at.is_(None)
+            Goal.archived_at.isnot(None)
+            if request.archived
+            else Goal.archived_at.is_(None)
         )
 
-    if search:
-        query = query.filter(Goal.title.ilike(f'%{search}%'))
+    if request.year is not None:
+        query = query.filter(Goal.year == request.year, Goal.month == request.month)
+
+    if request.search:
+        query = query.filter(Goal.title.ilike(f'%{request.search}%'))
 
     goals = await database.fetch_all(query)
 
