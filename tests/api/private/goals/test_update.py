@@ -125,36 +125,3 @@ class TestUpdateGoal:
         assert response.json() == serialize_error_response(
             'bad_request', 'year value is not a valid integer'
         )
-
-    async def test_invalid_status(self, client):
-        await self._setup()
-        project_data = {'status': 'invalid'}
-
-        response = await client.put(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status value is not a valid integer'
-        )
-
-    async def test_null_status(self, client):
-        await self._setup()
-        project_data = {'status': None}
-
-        response = await client.put(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status none is not an allowed value'
-        )
-
-    async def test_unavailable_status(self, client):
-        await self._setup()
-        project_data = {'status': 1000}
-
-        response = await client.put(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status 1000 is not a valid Status'
-        )

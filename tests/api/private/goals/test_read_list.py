@@ -51,22 +51,22 @@ class TestReadGoalList:
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_goal_response([goal])
 
-    async def test_filter_archived(self, client):
+    async def test_filter_achieved(self, client):
         await self._setup()
-        archived_goal = await GoalFactory.create(archived=True)
+        achieved_goal = await GoalFactory.create(achieved=True)
         await GoalFactory.create()
 
-        response = await client.get(self.url, params={'archived': True})
+        response = await client.get(self.url, params={'achieved': True})
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == serialize_goal_response([archived_goal])
+        assert response.json() == serialize_goal_response([achieved_goal])
 
     async def test_filter_active(self, client):
         await self._setup()
-        await GoalFactory.create(archived=True)
+        await GoalFactory.create(achieved=True)
         active_goal = await GoalFactory.create()
 
-        response = await client.get(self.url, params={'archived': False})
+        response = await client.get(self.url, params={'achieved': False})
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == serialize_goal_response([active_goal])

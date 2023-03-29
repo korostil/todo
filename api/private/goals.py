@@ -22,11 +22,11 @@ router = APIRouter()
 async def read_goals_list(request: RetrieveGoalListRequest = Depends()) -> list[dict]:
     query = select(Goal)
 
-    if request.archived is not None:
+    if request.achieved is not None:
         query = query.filter(
-            Goal.archived_at.isnot(None)
-            if request.archived
-            else Goal.archived_at.is_(None)
+            Goal.achieved_at.isnot(None)
+            if request.achieved
+            else Goal.achieved_at.is_(None)
         )
 
     if request.year is not None:
@@ -99,14 +99,14 @@ async def delete_goal(pk: int) -> None:
 
 
 @router.post(
-    '/goals/{pk}/archive/',
+    '/goals/{pk}/achieve/',
     tags=['goals'],
     response_model=GoalResponse,
     status_code=status.HTTP_200_OK,
 )
-async def archive_goal(pk: int) -> dict:
+async def achieve_goal(pk: int) -> dict:
     with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={pk} not found')):
-        goal: Record = await update_one_goal(pk=pk, data={'archived_at': func.now()})
+        goal: Record = await update_one_goal(pk=pk, data={'achieved_at': func.now()})
     response = dict(goal)
     response['projects'] = []
     return response
@@ -120,7 +120,7 @@ async def archive_goal(pk: int) -> dict:
 )
 async def restore_goal(pk: int) -> dict:
     with funcy.reraise(DoesNotExist, NotFound(f'goal with pk={pk} not found')):
-        goal: Record = await update_one_goal(pk=pk, data={'archived_at': None})
+        goal: Record = await update_one_goal(pk=pk, data={'achieved_at': None})
     response = dict(goal)
     response['projects'] = []
     return response

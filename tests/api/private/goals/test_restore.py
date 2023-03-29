@@ -17,7 +17,7 @@ class TestRestoreGoal:
         self.goal = await GoalFactory.create()
         self.url = app.url_path_for('restore_goal', pk=self.goal.id)
 
-    async def test_successfully_archived(self, client):
+    async def test_successfully_achieved(self, client):
         await self._setup()
 
         response = await client.post(self.url)
@@ -26,7 +26,7 @@ class TestRestoreGoal:
         json_response = response.json()
         query = select(Goal).where(Goal.id == self.goal.id)
         goal = await database.fetch_one(query)
-        assert goal.archived_at is None
+        assert goal.achieved_at is None
         assert json_response == serialize_goal_response(goal)
 
     async def test_not_found(self, client):

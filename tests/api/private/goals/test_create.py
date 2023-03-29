@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from app.database import database
 from main import app
-from models import Goal, Status
+from models import Goal
 from tests.api.helpers import serialize_error_response
 from tests.api.private.goals.helpers import serialize_goal_response
 from tests.factories import GoalDataFactory
@@ -115,36 +115,4 @@ class TestCreateGoal:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == serialize_error_response(
             'bad_request', 'year value is not a valid integer'
-        )
-
-    async def test_invalid_status(self, client):
-        await self._setup()
-        project_data = GoalDataFactory.create(status='invalid')
-
-        response = await client.post(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status value is not a valid integer'
-        )
-
-    async def test_default_status(self, client):
-        await self._setup()
-        project_data = GoalDataFactory.create(status=None)
-        del project_data['status']
-
-        response = await client.post(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_201_CREATED
-        assert response.json()['data']['status'] == Status.NEW.value
-
-    async def test_unavailable_status(self, client):
-        await self._setup()
-        project_data = GoalDataFactory.create(status=1000)
-
-        response = await client.post(self.url, json=project_data)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == serialize_error_response(
-            'bad_request', 'status 1000 is not a valid Status'
         )
