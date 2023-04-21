@@ -1,0 +1,27 @@
+services:
+  todo:
+    build: .
+    tty: true
+    env_file:
+      - .env
+    enviroment:
+      - COMPOSE_PROJECT_NAME
+      POSTGRES_HOST: todo_db
+    links:
+      - todo_db
+    ports:
+      - "{$APP_PORT:-8000}:8000"
+    depends_on:
+      - todo_db
+
+  todo_db:
+    image: postgres:15.2
+    env_file:
+      - .env
+    volumes:
+      - todo_data:/var/lib/postgresql/data:cached
+
+volumes:
+  todo_data:
+    external: false
+
