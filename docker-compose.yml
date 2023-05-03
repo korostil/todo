@@ -1,27 +1,37 @@
 services:
-  todo:
-    build: .
+  back:
+    container_name: todo-back
+    build: ./backend
+    tty: true
+    environment:
+      - DB_HOST=db
+    env_file:
+      - backend/.env
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  front:
+    container_name: todo-front
+    build: ./frontend
     tty: true
     env_file:
-      - .env
-    enviroment:
-      - COMPOSE_PROJECT_NAME
-      POSTGRES_HOST: todo_db
-    links:
-      - todo_db
+      frontend/.env
     ports:
-      - "{$APP_PORT:-8000}:8000"
+      - 3000:3000
     depends_on:
-      - todo_db
+      - back
 
-  todo_db:
+  db:
+    container_name: todo-db
     image: postgres:15.2
     env_file:
-      - .env
+      - .postgres.env
     volumes:
-      - todo_data:/var/lib/postgresql/data:cached
+      - pg_data:/var/lib/postgresql/data:cached
 
 volumes:
-  todo_data:
+  pg_data:
     external: false
 

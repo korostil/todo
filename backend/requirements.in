@@ -5,6 +5,7 @@ databases
 fastapi
 funcy
 pydantic
+python-dotenv
 sqlalchemy[asyncio]
 ujson
 uvicorn

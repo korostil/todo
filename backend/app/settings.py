@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     auth_token: str = 'secret_token'
 
     # Database
-    db_host: str = 'localhost'
+    db_host: str = 'db'
     db_port: int = 5432
     db_name: str = 'todo'
     db_user: str = 'todo'
@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     @property
     def is_testing_environment(self) -> bool:
         return self.environment == Environment.TESTING
+
+    class Config:
+        env_file = ".env"
 
 
 try:
