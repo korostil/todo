@@ -1,7 +1,9 @@
 services:
   back:
     container_name: todo-back
-    build: ./backend
+    build: 
+      context: ./backend
+      target: local_image
     tty: true
     environment:
       - DB_HOST=db

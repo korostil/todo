@@ -71,4 +71,3 @@ class RestfulEndpoint:
         assert response.json() == serialize_error_response(
             'forbidden', 'Not authenticated'
         )
-
