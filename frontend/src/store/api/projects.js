@@ -4,7 +4,7 @@ import { findEntityIndexById } from "@/store/services/utils/entities";
 
 const entity_url = new URL(todoAPIUrl + "/api/private/v1/projects/");
 
-export const projects = ref([]);
+export const projects = ref(null);
 export const isProjectsLoadingError = ref(false);
 export const activeProjects = computed(() =>
   projects.value.filter((project) => !project.is_archived)
@@ -33,7 +33,7 @@ export function createProject(body) {
 export function readProjectList({ force = false }) {
   let url = new URL(todoAPIUrl + "/api/private/v1/projects/");
 
-  if (projects.value && projects.value.length !== 0 && !force)
+  if (projects.value && !force)
     return { data: projects, error: ref(null) };
 
   const { data, error } = useFetch(url);
